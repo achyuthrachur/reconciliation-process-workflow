@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LendingPoint Reconciliation Process</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #f5f5f5;
+      --bg-card: #ffffff;
+      --bg-dark: #2d2d2d;
+      --text: #333333;
+      --text-light: #666666;
+      --text-muted: #999999;
+      --border: #e0e0e0;
+      --accent-blue: #5c6bc0;
+      --accent-green: #78909c;
+      --accent-orange: #8d6e63;
+      --accent-red: #a1887f;
+      --accent-purple: #7986cb;
+      --accent-teal: #90a4ae;
+      --shadow: 0 4px 20px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 40px rgba(0,0,0,0.10);
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      padding: 60px 20px 40px;
+      background: linear-gradient(135deg, #3d3d3d 0%, #5a5a5a 100%);
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      opacity: 0;
+    }
+
+    header p {
+      font-size: 1.1rem;
+      opacity: 0.8;
+    }
+
+    .header-visual {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .header-line {
+      stroke: rgba(255,255,255,0.1);
+      stroke-width: 1;
+      fill: none;
+    }
+
+    /* Section Styling */
+    .section {
+      margin: 60px 0;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .section.visible {
+      opacity: 1;
+      transform: translateY(0);
+      transition: all 0.6s ease;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .section-number {
+      width: 40px;
+      height: 40px;
+      background: var(--accent-blue);
+      color: white;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* Process Flow Visualization */
+    .process-flow {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .flow-svg-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      padding: 10px 0;
+    }
+
+    .flow-svg {
+      display: block;
+      min-width: 900px;
+      height: 500px;
+    }
+
+    .flow-node {
+      cursor: pointer;
+      opacity: 1;
+    }
+
+    .flow-node:hover rect {
+      filter: brightness(0.97);
+    }
+
+    .flow-node-bg {
+      fill: var(--bg-card);
+      stroke: var(--border);
+      stroke-width: 2;
+      rx: 12;
+    }
+
+    .flow-node-bg.input { stroke: var(--accent-blue); fill: #f0f0f8; }
+    .flow-node-bg.process { stroke: var(--accent-purple); fill: #f2f2f8; }
+    .flow-node-bg.filter { stroke: var(--accent-orange); fill: #f5f3f2; }
+    .flow-node-bg.output { stroke: var(--accent-green); fill: #f2f4f5; }
+    .flow-node-bg.validate { stroke: var(--accent-teal); fill: #f3f5f6; }
+
+    .flow-label {
+      font-size: 13px;
+      font-weight: 600;
+      fill: var(--text);
+    }
+
+    .flow-sublabel {
+      font-size: 11px;
+      fill: var(--text-light);
+    }
+
+    .flow-path {
+      fill: none;
+      stroke: var(--border);
+      stroke-width: 2;
+    }
+
+    /* Paths visible by default - animation will enhance them */
+
+    .flow-path.active {
+      stroke: var(--accent-blue);
+    }
+
+    .data-particle {
+      fill: #78909c;
+      opacity: 0;
+    }
+
+    /* Explanation Cards */
+    .explanation-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .explanation-card {
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--accent-blue);
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+
+    .explanation-card.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .explanation-card h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .explanation-card p {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-bottom: 15px;
+    }
+
+    .explanation-card .formula {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: 'Consolas', monospace;
+      font-size: 0.8rem;
+      color: var(--text);
+      overflow-x: auto;
+    }
+
+    /* Wire Reconciliation Visualization */
+    .wire-recon {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: var(--shadow);
+    }
+
+    .wire-equation {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin: 30px 0;
+    }
+
+    .wire-box {
+      background: #f8fafc;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 30px;
+      text-align: center;
+      min-width: 180px;
+      opacity: 0;
+      transform: scale(0.8);
+    }
+
+    .wire-box.highlight {
+      border-color: var(--accent-green);
+      background: #f2f4f5;
+    }
+
+    .wire-box.warning {
+      border-color: var(--accent-orange);
+      background: #f5f4f3;
+    }
+
+    .wire-box .label {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 5px;
+    }
+
+    .wire-box .value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .wire-operator {
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      opacity: 0;
+    }
+
+    /* Transaction Breakdown Animation */
+    .transaction-flow {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: var(--shadow);
+    }
+
+    .txn-visual {
+      position: relative;
+      height: 400px;
+      margin: 30px 0;
+    }
+
+    .txn-source {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 200px;
+      background: #eff6ff;
+      border: 2px solid var(--accent-blue);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .txn-categories {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 250px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+    }
+
+    .txn-category {
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 15px;
+      opacity: 0;
+      transform: translateX(30px);
+    }
+
+    .txn-category.lpt { border-color: #78909c; }
+    .txn-category.rta { border-color: #8d6e63; }
+    .txn-category.adj { border-color: #7986cb; }
+
+    .txn-category .name {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .txn-category .amount {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-top: 5px;
+    }
+
+    .txn-svg {
+      position: absolute;
+      left: 200px;
+      right: 250px;
+      top: 0;
+      bottom: 0;
+    }
+
+    .txn-path {
+      fill: none;
+      stroke-width: 3;
+      stroke-dasharray: 500;
+      stroke-dashoffset: 500;
+    }
+
+    .txn-path.lpt { stroke: #78909c; }
+    .txn-path.rta { stroke: #8d6e63; }
+    .txn-path.adj { stroke: #7986cb; }
+
+    .txn-dot {
+      r: 6;
+      opacity: 0;
+    }
+
+    .txn-dot.lpt { fill: #78909c; }
+    .txn-dot.rta { fill: #8d6e63; }
+    .txn-dot.adj { fill: #7986cb; }
+
+    /* Charge-Off Journey */
+    .chargeoff-journey {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: var(--shadow);
+    }
+
+    .journey-track {
+      position: relative;
+      padding: 40px 0;
+    }
+
+    .journey-line {
+      position: absolute;
+      top: 50%;
+      left: 60px;
+      right: 60px;
+      height: 4px;
+      background: var(--border);
+      transform: translateY(-50%);
+    }
+
+    .journey-progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #78909c, #90a4ae, #a1a1a1, #8d8d8d);
+      border-radius: 2px;
+    }
+
+    .journey-stages {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+    }
+
+    .journey-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      max-width: 120px;
+      cursor: pointer;
+    }
+
+    .stage-icon {
+      width: 50px;
+      height: 50px;
+      background: var(--bg);
+      border: 3px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .journey-stage.active .stage-icon {
+      background: #5c6bc0;
+      border-color: #5c6bc0;
+      color: white;
+      transform: scale(1.1);
+      box-shadow: 0 4px 15px rgba(92, 107, 192, 0.3);
+    }
+
+    .stage-title {
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+    }
+
+    .stage-desc {
+      font-size: 0.75rem;
+      color: var(--text-light);
+    }
+
+    .stage-detail {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 25px;
+      margin-top: 30px;
+      display: none;
+    }
+
+    .stage-detail.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Validation Checks */
+    .validation-flow {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: var(--shadow);
+    }
+
+    .validation-tree {
+      position: relative;
+    }
+
+    .validation-node {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .validation-node.pass {
+      border-color: #78909c;
+      background: #f2f4f5;
+    }
+
+    .validation-node.fail {
+      border-color: #8d6e63;
+      background: #f5f4f3;
+    }
+
+    .validation-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white;
+    }
+
+    .validation-icon.pass { background: #78909c; }
+    .validation-icon.fail { background: #8d6e63; }
+
+    .validation-text {
+      flex: 1;
+    }
+
+    .validation-text .name {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .validation-text .formula {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      font-family: 'Consolas', monospace;
+    }
+
+    .validation-branch {
+      margin-left: 40px;
+      padding-left: 20px;
+      border-left: 2px dashed var(--border);
+    }
+
+    /* Interactive Formula Breakdown */
+    .formula-interactive {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: var(--shadow);
+    }
+
+    .formula-display {
+      background: #3d3d3d;
+      border-radius: 12px;
+      padding: 25px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.9rem;
+      color: #e5e5e5;
+      overflow-x: auto;
+      margin: 20px 0;
+    }
+
+    .formula-display .highlight {
+      background: rgba(120, 144, 156, 0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .formula-display .highlight:hover {
+      background: rgba(120, 144, 156, 0.5);
+    }
+
+    .formula-display .highlight.active {
+      background: #78909c;
+      color: white;
+    }
+
+    .formula-explanation {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+      min-height: 100px;
+    }
+
+    .formula-explanation h5 {
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      color: #5c6bc0;
+    }
+
+    .formula-explanation p {
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+
+    /* Daily Workflow Interactive */
+    .workflow-steps {
+      position: relative;
+    }
+
+    .workflow-step {
+      display: flex;
+      gap: 25px;
+      padding: 25px;
+      background: var(--bg-card);
+      border-radius: 12px;
+      margin-bottom: 15px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+
+    .workflow-step:hover {
+      transform: translateX(5px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .workflow-step.active {
+      border-left: 4px solid var(--accent-blue);
+    }
+
+    .step-indicator {
+      width: 50px;
+      height: 50px;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      transition: all 0.3s ease;
+    }
+
+    .workflow-step.active .step-indicator {
+      background: #5c6bc0;
+      border-color: #5c6bc0;
+      color: white;
+    }
+
+    .step-content h4 {
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+
+    .step-content p {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-bottom: 12px;
+    }
+
+    .step-details {
+      display: none;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid var(--border);
+    }
+
+    .workflow-step.active .step-details {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .step-detail-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 0;
+      font-size: 0.85rem;
+    }
+
+    .step-detail-item::before {
+      content: '→';
+      color: #5c6bc0;
+      font-weight: 600;
+    }
+
+    /* Summary Stats */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin: 30px 0;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .stat-card .icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .stat-card .value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .stat-card .label {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      margin-top: 5px;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-light);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+      margin-top: 60px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      header h1 { font-size: 1.8rem; }
+      .wire-equation { flex-direction: column; }
+      .journey-stages { flex-wrap: wrap; gap: 20px; justify-content: center; }
+      .txn-visual { height: auto; flex-direction: column; }
+      .txn-source, .txn-categories { position: static; width: 100%; transform: none; }
+      .txn-svg { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <svg class="header-visual" viewBox="0 0 1200 200" preserveAspectRatio="none">
+      <path class="header-line" d="M0,100 Q300,50 600,100 T1200,100" />
+      <path class="header-line" d="M0,150 Q400,100 800,150 T1200,120" />
+      <path class="header-line" d="M0,50 Q200,80 500,50 T1200,80" />
+    </svg>
+    <h1>Understanding the Reconciliation Process</h1>
+    <p>How daily payment data becomes journal entries</p>
+  </header>
+
+  <div class="container">
+
+    <!-- Section 1: The Big Picture -->
+    <section class="section" id="big-picture">
+      <div class="section-header">
+        <div class="section-number">1</div>
+        <h2 class="section-title">The Big Picture: What Are We Reconciling?</h2>
+      </div>
+
+      <div class="wire-recon">
+        <p style="text-align: center; color: var(--text-light); margin-bottom: 20px;">
+          Every day, LendingPoint sends a wire transfer. Our job is to verify that wire matches our calculated sum of all transactions.
+        </p>
+
+        <div class="wire-equation">
+          <div class="wire-box highlight" id="wire-actual">
+            <div class="label">Actual Wire Received</div>
+            <div class="value">$772,758.82</div>
+          </div>
+          <div class="wire-operator">=</div>
+          <div class="wire-box" id="wire-lpt">
+            <div class="label">Payments (LPT)</div>
+            <div class="value">$773,583.07</div>
+          </div>
+          <div class="wire-operator">+</div>
+          <div class="wire-box" id="wire-rta">
+            <div class="label">Returns (RTA)</div>
+            <div class="value">-$250.00</div>
+          </div>
+          <div class="wire-operator">+</div>
+          <div class="wire-box" id="wire-adj">
+            <div class="label">Adjustments (ADJ)</div>
+            <div class="value">-$506.77</div>
+          </div>
+          <div class="wire-operator">−</div>
+          <div class="wire-box" id="wire-fees">
+            <div class="label">DMC + RCS Fees</div>
+            <div class="value">$67.48</div>
+          </div>
+        </div>
+
+        <div class="explanation-grid">
+          <div class="explanation-card" style="border-color: #78909c;">
+            <h4><span style="color: #78909c;">●</span> LPT - Loan Payment Transactions</h4>
+            <p>Regular payments from borrowers. This includes principal, interest, and fees collected. Each transaction starts with "LPT-" prefix.</p>
+          </div>
+          <div class="explanation-card" style="border-color: #8d6e63;">
+            <h4><span style="color: #8d6e63;">●</span> RTA - Return Transactions</h4>
+            <p>Payment reversals - when a payment bounces or is returned. These are negative amounts that reduce the wire total.</p>
+          </div>
+          <div class="explanation-card" style="border-color: #7986cb;">
+            <h4><span style="color: #7986cb;">●</span> ADJ - Adjustment Transactions</h4>
+            <p>Corrections and refunds. Includes spread corrections, customer refunds, and balance adjustments.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: How Transactions Flow -->
+    <section class="section" id="transaction-flow">
+      <div class="section-header">
+        <div class="section-number">2</div>
+        <h2 class="section-title">How Transactions Get Categorized</h2>
+      </div>
+
+      <div class="transaction-flow">
+        <p style="color: var(--text-light); margin-bottom: 20px;">
+          The Pymt_File contains <strong>59,812 transactions</strong>. Each transaction is filtered by settlement date, then categorized by type and product.
+        </p>
+
+        <div class="flow-svg-wrapper">
+        <svg class="flow-svg" viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet" id="txn-flow-svg">
+          <!-- Source Box -->
+          <g class="flow-node" transform="translate(20, 180)">
+            <rect class="flow-node-bg input" width="160" height="100" rx="12" />
+            <text class="flow-label" x="80" y="40" text-anchor="middle">Pymt_File</text>
+            <text class="flow-sublabel" x="80" y="60" text-anchor="middle">59,812 transactions</text>
+            <text class="flow-sublabel" x="80" y="78" text-anchor="middle">27 columns</text>
+          </g>
+
+          <!-- Filter -->
+          <g class="flow-node" transform="translate(250, 180)">
+            <rect class="flow-node-bg process" width="160" height="100" rx="12" />
+            <text class="flow-label" x="80" y="35" text-anchor="middle">Settlement</text>
+            <text class="flow-label" x="80" y="52" text-anchor="middle">Date Filter</text>
+            <text class="flow-sublabel" x="80" y="75" text-anchor="middle">Date_remitted = C2</text>
+          </g>
+
+          <!-- Transaction Type Split -->
+          <g class="flow-node" transform="translate(480, 50)">
+            <rect class="flow-node-bg filter" width="140" height="80" rx="10" style="stroke: #78909c;" />
+            <text class="flow-label" x="70" y="30" text-anchor="middle" style="fill: #78909c;">LPT-*</text>
+            <text class="flow-sublabel" x="70" y="50" text-anchor="middle">Payments</text>
+            <text class="flow-sublabel" x="70" y="65" text-anchor="middle">$773,583.07</text>
+          </g>
+
+          <g class="flow-node" transform="translate(480, 180)">
+            <rect class="flow-node-bg filter" width="140" height="80" rx="10" style="stroke: #8d6e63;" />
+            <text class="flow-label" x="70" y="30" text-anchor="middle" style="fill: #8d6e63;">RTA-*</text>
+            <text class="flow-sublabel" x="70" y="50" text-anchor="middle">Returns</text>
+            <text class="flow-sublabel" x="70" y="65" text-anchor="middle">-$250.00</text>
+          </g>
+
+          <g class="flow-node" transform="translate(480, 310)">
+            <rect class="flow-node-bg filter" width="140" height="80" rx="10" style="stroke: #7986cb;" />
+            <text class="flow-label" x="70" y="30" text-anchor="middle" style="fill: #7986cb;">ADJ-*</text>
+            <text class="flow-sublabel" x="70" y="50" text-anchor="middle">Adjustments</text>
+            <text class="flow-sublabel" x="70" y="65" text-anchor="middle">-$506.77</text>
+          </g>
+
+          <!-- Product Split -->
+          <g class="flow-node" transform="translate(700, 20)">
+            <rect class="flow-node-bg output" width="130" height="60" rx="8" />
+            <text class="flow-label" x="65" y="25" text-anchor="middle">DTC / POS</text>
+            <text class="flow-sublabel" x="65" y="42" text-anchor="middle">Consumer</text>
+          </g>
+
+          <g class="flow-node" transform="translate(700, 100)">
+            <rect class="flow-node-bg output" width="130" height="60" rx="8" />
+            <text class="flow-label" x="65" y="25" text-anchor="middle">eBay / JOOR</text>
+            <text class="flow-sublabel" x="65" y="42" text-anchor="middle">Commercial</text>
+          </g>
+
+          <!-- Connecting Lines -->
+          <path class="flow-path" id="path1" d="M180,230 L250,230" />
+          <path class="flow-path" id="path2" d="M410,230 Q450,230 450,90 L480,90" style="stroke: #78909c;" />
+          <path class="flow-path" id="path3" d="M410,230 L480,230" style="stroke: #8d6e63;" />
+          <path class="flow-path" id="path4" d="M410,230 Q450,230 450,350 L480,350" style="stroke: #7986cb;" />
+          <path class="flow-path" id="path5" d="M620,90 L700,50" />
+          <path class="flow-path" id="path6" d="M620,90 L700,130" />
+
+          <!-- Animated Dots -->
+          <circle class="data-particle" cx="180" cy="230" r="5" id="particle1" />
+        </svg>
+        </div>
+
+        <div class="explanation-grid" style="margin-top: 30px;">
+          <div class="explanation-card" style="border-color: #5c6bc0;">
+            <h4>Key Filter: Settlement Date</h4>
+            <p>Column E (Date_remitted) must match the settlement date entered in Parse!C2. This filters thousands of transactions down to just today's settlement.</p>
+            <div class="formula">=FILTER(Pymt_File!$A:$Y, Pymt_File!$E:$E=$C$2)</div>
+          </div>
+          <div class="explanation-card" style="border-color: #90a4ae;">
+            <h4>Product Classification</h4>
+            <p><strong>Consumer:</strong> DTC (Direct-to-Consumer) and POS (Point of Sale)<br>
+            <strong>Commercial:</strong> eBay and JOOR loans<br>
+            This split affects which GL accounts receive the entries.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: The Parse Sheet Logic -->
+    <section class="section" id="parse-logic">
+      <div class="section-header">
+        <div class="section-number">3</div>
+        <h2 class="section-title">How the Parse Sheet Calculates Each Entry</h2>
+      </div>
+
+      <div class="formula-interactive">
+        <p style="color: var(--text-light); margin-bottom: 20px;">
+          Click on highlighted parts of the formula to understand what each piece does.
+        </p>
+
+        <div class="formula-display">
+          <strong>Consumer Principal (C10):</strong><br><br>
+          =ROUND(SUM(<span class="highlight" data-explain="sumifs">SUMIFS</span>(<span class="highlight" data-explain="principal">Pymt_File!$G:$G</span>,<br>
+          &nbsp;&nbsp;<span class="highlight" data-explain="date-filter">Pymt_File!$E:$E,$C$2</span>,<br>
+          &nbsp;&nbsp;<span class="highlight" data-explain="not-cosale">Pymt_File!$K:$K,"&lt;&gt;CO Sale Proceeds"</span>,<br>
+          &nbsp;&nbsp;<span class="highlight" data-explain="lpt-filter">Pymt_File!$A:$A,"LPT*"</span>,<br>
+          &nbsp;&nbsp;<span class="highlight" data-explain="product-filter">Pymt_File!$N:$N,{"DTC","POS"}</span>)),2)+$G10
+        </div>
+
+        <div class="formula-explanation" id="formula-explanation">
+          <h5>Click a highlighted section above</h5>
+          <p>Each part of this formula serves a specific filtering or calculation purpose.</p>
+        </div>
+
+        <div class="explanation-grid" style="margin-top: 30px;">
+          <div class="explanation-card">
+            <h4>Why Multiple Conditions?</h4>
+            <p>We need to isolate ONLY the Consumer Principal from regular payments. This means:</p>
+            <ul style="margin-left: 20px; color: var(--text-light); font-size: 0.9rem;">
+              <li>Only today's settlement (date filter)</li>
+              <li>Only LPT transactions (not returns or adjustments)</li>
+              <li>Only Consumer products (DTC/POS)</li>
+              <li>Exclude charge-off sale proceeds (separate entry)</li>
+            </ul>
+          </div>
+          <div class="explanation-card">
+            <h4>The $G10 Adjustment</h4>
+            <p>Column G contains manual override adjustments. If there's a one-off correction needed that doesn't fit the formula, it's entered here and added to the calculated total.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Charge-Off Lifecycle -->
+    <section class="section" id="chargeoff">
+      <div class="section-header">
+        <div class="section-number">4</div>
+        <h2 class="section-title">The Charge-Off Lifecycle</h2>
+      </div>
+
+      <div class="chargeoff-journey">
+        <p style="color: var(--text-light); margin-bottom: 30px;">
+          When a loan becomes severely delinquent, it goes through a specific accounting journey. Click each stage to learn more.
+        </p>
+
+        <div class="journey-track">
+          <div class="journey-line">
+            <div class="journey-progress" id="journey-progress"></div>
+          </div>
+
+          <div class="journey-stages">
+            <div class="journey-stage active" data-stage="0">
+              <div class="stage-icon">📋</div>
+              <div class="stage-title">Active Loan</div>
+              <div class="stage-desc">Current & performing</div>
+            </div>
+            <div class="journey-stage" data-stage="1">
+              <div class="stage-icon">⚠️</div>
+              <div class="stage-title">120+ DPD</div>
+              <div class="stage-desc">Severely delinquent</div>
+            </div>
+            <div class="journey-stage" data-stage="2">
+              <div class="stage-icon">📒</div>
+              <div class="stage-title">120 Subledger</div>
+              <div class="stage-desc">Our internal tracking</div>
+            </div>
+            <div class="journey-stage" data-stage="3">
+              <div class="stage-icon">🔴</div>
+              <div class="stage-title">LP Charges Off</div>
+              <div class="stage-desc">Partner action</div>
+            </div>
+            <div class="journey-stage" data-stage="4">
+              <div class="stage-icon">📕</div>
+              <div class="stage-title">180 Subledger</div>
+              <div class="stage-desc">Final ledger entry</div>
+            </div>
+            <div class="journey-stage" data-stage="5">
+              <div class="stage-icon">✓</div>
+              <div class="stage-title">Resolved</div>
+              <div class="stage-desc">Sold or settled</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stage-detail active" id="stage-detail-0">
+          <h4 style="margin-bottom: 10px;">Active Loan</h4>
+          <p style="color: var(--text-light);">The loan is current or has minor delinquency. Payments are processed normally through the Parse sheet. Principal and interest are tracked in the Day tapes.</p>
+        </div>
+
+        <div class="stage-detail" id="stage-detail-1">
+          <h4 style="margin-bottom: 10px;">120+ Days Past Due</h4>
+          <p style="color: var(--text-light);">When Days_Past_Due (Column K) exceeds 119, the loan enters our 120-ChargeOff tracking. The filter criteria:</p>
+          <div class="formula" style="margin-top: 10px;">
+            Charge_Off_Date = blank (not yet charged off by LP)<br>
+            Days_Past_Due > 119<br>
+            Status ≠ "Canceled" or "Closed - Obligations met"
+          </div>
+        </div>
+
+        <div class="stage-detail" id="stage-detail-2">
+          <h4 style="margin-bottom: 10px;">120 Subledger Entry</h4>
+          <p style="color: var(--text-light);">New loans meeting the 120+ DPD criteria are added to the 120Subledger. This is OUR internal tracking - we're recognizing the charge-off before LP does. Key fields recorded:</p>
+          <ul style="margin: 10px 0 0 20px; color: var(--text-light);">
+            <li>Principal amount at entry</li>
+            <li>Interest + Capitalized Interest</li>
+            <li>Product type (Consumer/Commercial)</li>
+            <li>Origination date</li>
+          </ul>
+        </div>
+
+        <div class="stage-detail" id="stage-detail-3">
+          <h4 style="margin-bottom: 10px;">LendingPoint Charges Off</h4>
+          <p style="color: var(--text-light);">When LP officially charges off the loan, Column T (Charge_Off_Date) gets populated. The loan moves from 120-ChargeOff tracking to 180-ChargeOff. We compare:</p>
+          <ul style="margin: 10px 0 0 20px; color: var(--text-light);">
+            <li>Our 120Subledger principal vs. LP's charge-off amount</li>
+            <li>Any balance changes between Day1 and Day2</li>
+            <li>Interest accrual differences</li>
+          </ul>
+        </div>
+
+        <div class="stage-detail" id="stage-detail-4">
+          <h4 style="margin-bottom: 10px;">180 Subledger Entry</h4>
+          <p style="color: var(--text-light);">The loan is recorded in the 180Subledger with LP's official charge-off figures. The 180-TrueUp sheet reconciles any balance changes or dropped loans.</p>
+        </div>
+
+        <div class="stage-detail" id="stage-detail-5">
+          <h4 style="margin-bottom: 10px;">Resolution</h4>
+          <p style="color: var(--text-light);">The loan reaches final status: "Closed - Obligations met" (paid off), sold to debt buyer, or settled. CO Sale Proceeds are tracked separately in the Parse sheet.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Validation Checks -->
+    <section class="section" id="validation">
+      <div class="section-header">
+        <div class="section-number">5</div>
+        <h2 class="section-title">The Validation Chain</h2>
+      </div>
+
+      <div class="validation-flow">
+        <p style="color: var(--text-light); margin-bottom: 25px;">
+          Before posting entries, we run through a series of validation checks. If any critical check fails, we investigate before posting.
+        </p>
+
+        <div class="validation-tree">
+          <div class="validation-node pass">
+            <div class="validation-icon pass">✓</div>
+            <div class="validation-text">
+              <div class="name">Credits = Debits (N21)</div>
+              <div class="formula">The journal MUST balance. This is non-negotiable.</div>
+            </div>
+          </div>
+
+          <div class="validation-branch">
+            <div class="validation-node fail">
+              <div class="validation-icon fail">✗</div>
+              <div class="validation-text">
+                <div class="name">Wire Matches Calculated (N16)</div>
+                <div class="formula">Variance: -$0.02 → Check OOB adjustments</div>
+              </div>
+            </div>
+
+            <div class="validation-node pass">
+              <div class="validation-icon pass">✓</div>
+              <div class="validation-text">
+                <div class="name">Sub-entries Match Top (N15)</div>
+                <div class="formula">Sum of all ATE entries = Total wire calculation</div>
+              </div>
+            </div>
+
+            <div class="validation-node pass">
+              <div class="validation-icon pass">✓</div>
+              <div class="validation-text">
+                <div class="name">Excess Entries Match (N25)</div>
+                <div class="formula">Individual excess entries = Total excess in Pymt_File</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="explanation-grid" style="margin-top: 30px;">
+          <div class="explanation-card" style="border-color: #8d6e63;">
+            <h4>When Validation Fails</h4>
+            <p>A -$0.02 variance is typically a penny rounding issue (OOB). The OOB_Filter captures these and they're auto-adjusted. Larger variances require investigation of the Pymt_File.</p>
+          </div>
+          <div class="explanation-card" style="border-color: #78909c;">
+            <h4>The Critical Check</h4>
+            <p><strong>Credits = Debits</strong> must ALWAYS pass. If this fails, the journal is unbalanced and cannot be posted. Every dollar debited must equal every dollar credited.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: Daily Workflow -->
+    <section class="section" id="workflow">
+      <div class="section-header">
+        <div class="section-number">6</div>
+        <h2 class="section-title">Daily Workflow: Step by Step</h2>
+      </div>
+
+      <div class="workflow-steps">
+        <div class="workflow-step active" data-step="1">
+          <div class="step-indicator">1</div>
+          <div class="step-content">
+            <h4>Import Fresh Data</h4>
+            <p>Load the three data files from LendingPoint into the workbook.</p>
+            <div class="step-details">
+              <div class="step-detail-item">Day1_Tape: Yesterday's loan snapshot (32,292 loans)</div>
+              <div class="step-detail-item">Day2_Tape: Today's loan snapshot (same population, updated balances)</div>
+              <div class="step-detail-item">Pymt_File: All payment transactions</div>
+              <div class="step-detail-item">Verify the As_of_Date in both tapes matches expected dates</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="workflow-step" data-step="2">
+          <div class="step-indicator">2</div>
+          <div class="step-content">
+            <h4>Configure the Parse Sheet</h4>
+            <p>Enter the key inputs that drive all calculations.</p>
+            <div class="step-details">
+              <div class="step-detail-item">C2: Enter today's Settlement Date (Excel serial number)</div>
+              <div class="step-detail-item">C4: Enter the Actual Wire Amount received from LP</div>
+              <div class="step-detail-item">Run macro import buttons to refresh dynamic ranges</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="workflow-step" data-step="3">
+          <div class="step-indicator">3</div>
+          <div class="step-content">
+            <h4>Check Primary Validations</h4>
+            <p>Verify the wire reconciles before investigating details.</p>
+            <div class="step-details">
+              <div class="step-detail-item">N21: Credits = Debits → MUST be Y</div>
+              <div class="step-detail-item">N15: Sub-entries match calculated total</div>
+              <div class="step-detail-item">N16/N18: Wire variances (small OOB okay, large = investigate)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="workflow-step" data-step="4">
+          <div class="step-indicator">4</div>
+          <div class="step-content">
+            <h4>Review Exception Items</h4>
+            <p>Handle overpayments, returns, and adjustments.</p>
+            <div class="step-details">
+              <div class="step-detail-item">Excess_Filter: Review individual overpayments needing refund entries</div>
+              <div class="step-detail-item">OOB_Filter: Verify penny adjustments are captured</div>
+              <div class="step-detail-item">N34: Returns match RTA total</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="workflow-step" data-step="5">
+          <div class="step-indicator">5</div>
+          <div class="step-content">
+            <h4>Validate Charge-Off Reconciliation</h4>
+            <p>Ensure 120 and 180 day tracking is accurate.</p>
+            <div class="step-details">
+              <div class="step-detail-item">120-ChargeOff!AE1-AE4: Principal and interest matches</div>
+              <div class="step-detail-item">180-ChargeOff!AT20/AU20: 3-way match validation</div>
+              <div class="step-detail-item">180-TrueUp: Reconcile dropped loans and balance changes</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="workflow-step" data-step="6">
+          <div class="step-indicator">6</div>
+          <div class="step-content">
+            <h4>Generate Output Files</h4>
+            <p>Export journal entries and update historical ledgers.</p>
+            <div class="step-details">
+              <div class="step-detail-item">Copy Parse!B9:F78 (ATE entries) to journal template</div>
+              <div class="step-detail-item">Copy new 120-day loans to 120Subledger</div>
+              <div class="step-detail-item">Copy new 180-day loans to 180Subledger</div>
+              <div class="step-detail-item">Export Pymt_Export to Data Team</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Summary Stats -->
+    <section class="section" id="summary">
+      <div class="section-header">
+        <div class="section-number">7</div>
+        <h2 class="section-title">Key Numbers at a Glance</h2>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="icon">💰</div>
+          <div class="value">$772,758.82</div>
+          <div class="label">Daily Wire Amount</div>
+        </div>
+        <div class="stat-card">
+          <div class="icon">📊</div>
+          <div class="value">59,812</div>
+          <div class="label">Transactions Processed</div>
+        </div>
+        <div class="stat-card">
+          <div class="icon">🏠</div>
+          <div class="value">32,292</div>
+          <div class="label">Loans in Portfolio</div>
+        </div>
+        <div class="stat-card">
+          <div class="icon">✓</div>
+          <div class="value">17</div>
+          <div class="label">Validation Checks</div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <p>Interactive Process Documentation • Macro Purchase Parse 0.2.2</p>
+  </footer>
+
+  <script type="module">
+    import { animate, stagger, createTimeline } from 'https://cdn.jsdelivr.net/npm/animejs@4.0.0/+esm';
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+      // ===== Header Animation =====
+      animate('header h1', {
+        opacity: [0, 1],
+        translateY: [-30, 0],
+        duration: 1000,
+        ease: 'outExpo'
+      });
+
+      // Animate header lines
+      document.querySelectorAll('.header-line').forEach((line, i) => {
+        const length = line.getTotalLength();
+        line.style.strokeDasharray = length;
+        line.style.strokeDashoffset = length;
+        animate(line, {
+          strokeDashoffset: 0,
+          duration: 2000,
+          ease: 'inOutSine',
+          delay: i * 200
+        });
+      });
+
+      // ===== Scroll Observer for Sections =====
+      const sectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            animateSection(entry.target.id);
+          }
+        });
+      }, { threshold: 0.15 });
+
+      document.querySelectorAll('.section').forEach(section => {
+        sectionObserver.observe(section);
+      });
+
+      // ===== Section-specific Animations =====
+      function animateSection(sectionId) {
+        switch(sectionId) {
+          case 'big-picture':
+            animateWireEquation();
+            break;
+          case 'transaction-flow':
+            animateTransactionFlow();
+            break;
+          case 'validation':
+            animateValidationNodes();
+            break;
+          case 'workflow':
+            animateWorkflowSteps();
+            break;
+          case 'summary':
+            animateStats();
+            break;
+        }
+
+        // Animate explanation cards in any section
+        const cards = document.querySelectorAll(`#${sectionId} .explanation-card`);
+        animate(cards, {
+          opacity: [0, 1],
+          translateX: [-20, 0],
+          duration: 600,
+          delay: stagger(100, {start: 300}),
+          ease: 'outExpo'
+        });
+      }
+
+      // ===== Wire Equation Animation =====
+      function animateWireEquation() {
+        const tl = createTimeline({defaults: {ease: 'outExpo'}});
+        tl.add('#wire-actual', {
+            opacity: [0, 1],
+            scale: [0.8, 1],
+            duration: 600
+          })
+          .add('.wire-operator', {
+            opacity: [0, 1],
+            duration: 300
+          }, '-=300')
+          .add('#wire-lpt', {
+            opacity: [0, 1],
+            scale: [0.8, 1],
+            duration: 500
+          }, '-=200')
+          .add('#wire-rta', {
+            opacity: [0, 1],
+            scale: [0.8, 1],
+            duration: 500
+          }, '-=300')
+          .add('#wire-adj', {
+            opacity: [0, 1],
+            scale: [0.8, 1],
+            duration: 500
+          }, '-=300')
+          .add('#wire-fees', {
+            opacity: [0, 1],
+            scale: [0.8, 1],
+            duration: 500
+          }, '-=300');
+      }
+
+      // ===== Transaction Flow Animation =====
+      function animateTransactionFlow() {
+        const svg = document.getElementById('txn-flow-svg');
+        if (!svg) return;
+
+        // Add animated class to enable dash animation
+        const paths = svg.querySelectorAll('.flow-path');
+        // Set up and animate paths
+        paths.forEach((path, i) => {
+          const length = path.getTotalLength();
+          path.style.strokeDasharray = length;
+          path.style.strokeDashoffset = length;
+          animate(path, {
+            strokeDashoffset: 0,
+            duration: 1500,
+            delay: i * 200,
+            ease: 'inOutSine'
+          });
+        });
+
+        // Animate nodes appearing (opacity only - no transforms on SVG elements)
+        animate('#txn-flow-svg .flow-node', {
+          opacity: [0, 1],
+          duration: 600,
+          delay: stagger(150),
+          ease: 'outExpo'
+        });
+
+        // Create flowing particles
+        setTimeout(() => {
+          createFlowingParticle();
+          setInterval(createFlowingParticle, 2000);
+        }, 1500);
+      }
+
+      function createFlowingParticle() {
+        const svg = document.getElementById('txn-flow-svg');
+        if (!svg) return;
+
+        const particle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        particle.setAttribute('r', '4');
+        particle.setAttribute('fill', '#78909c');
+        particle.setAttribute('cx', '100');
+        particle.setAttribute('cy', '230');
+        particle.setAttribute('opacity', '0');
+        svg.appendChild(particle);
+
+        // Animate along path using SVG attributes
+        const tl = createTimeline({
+          defaults: {ease: 'linear'},
+          onComplete: () => particle.remove()
+        });
+        tl.add(particle, {cx: 100, cy: 230, opacity: 1, duration: 500})
+          .add(particle, {cx: 330, duration: 500})
+          .add(particle, {cx: 480, cy: 90, opacity: 0, duration: 400});
+      }
+
+      // ===== Validation Nodes Animation =====
+      function animateValidationNodes() {
+        animate('.validation-node', {
+          opacity: [0, 1],
+          translateY: [15, 0],
+          duration: 500,
+          delay: stagger(150),
+          ease: 'outExpo'
+        });
+      }
+
+      // ===== Workflow Steps Animation =====
+      function animateWorkflowSteps() {
+        animate('.workflow-step', {
+          opacity: [0, 1],
+          translateX: [-30, 0],
+          duration: 600,
+          delay: stagger(100),
+          ease: 'outExpo'
+        });
+      }
+
+      // ===== Stats Animation =====
+      function animateStats() {
+        animate('.stat-card', {
+          opacity: [0, 1],
+          translateY: [20, 0],
+          scale: [0.95, 1],
+          duration: 600,
+          delay: stagger(100),
+          ease: 'outExpo'
+        });
+      }
+
+      // ===== Charge-Off Journey Interaction =====
+      const journeyStages = document.querySelectorAll('.journey-stage');
+      const journeyProgress = document.getElementById('journey-progress');
+
+      journeyStages.forEach((stage, index) => {
+        stage.addEventListener('click', () => {
+          // Update active state
+          journeyStages.forEach((s, i) => {
+            if (i <= index) {
+              s.classList.add('active');
+            } else {
+              s.classList.remove('active');
+            }
+          });
+
+          // Animate progress bar
+          const progressPercent = (index / (journeyStages.length - 1)) * 100;
+          animate(journeyProgress, {
+            width: progressPercent + '%',
+            duration: 500,
+            ease: 'outQuad'
+          });
+
+          // Show corresponding detail
+          document.querySelectorAll('.stage-detail').forEach((detail, i) => {
+            if (i === index) {
+              detail.classList.add('active');
+            } else {
+              detail.classList.remove('active');
+            }
+          });
+        });
+      });
+
+      // ===== Formula Interactive Highlights =====
+      const formulaHighlights = document.querySelectorAll('.formula-display .highlight');
+      const formulaExplanation = document.getElementById('formula-explanation');
+
+      const explanations = {
+        'sumifs': {
+          title: 'SUMIFS Function',
+          text: 'Sums values that meet multiple criteria. The first argument is what to sum (Principal column), followed by pairs of criteria range + criteria value.'
+        },
+        'principal': {
+          title: 'Column G: Principal',
+          text: 'The Principal portion of each payment. This is the amount going toward loan paydown, not interest or fees.'
+        },
+        'date-filter': {
+          title: 'Settlement Date Filter',
+          text: 'Only include transactions where Date_remitted (Column E) equals our settlement date in cell C2. This filters to just today\'s settlement.'
+        },
+        'not-cosale': {
+          title: 'Exclude CO Sale Proceeds',
+          text: 'Charge-off sale proceeds have their own GL entry. We exclude them here by filtering out Payment_Type = "CO Sale Proceeds".'
+        },
+        'lpt-filter': {
+          title: 'LPT Transactions Only',
+          text: 'The wildcard "LPT*" matches any Transaction ID starting with "LPT-". This gives us only payments, not returns (RTA-) or adjustments (ADJ-).'
+        },
+        'product-filter': {
+          title: 'Consumer Products',
+          text: 'The array {"DTC","POS"} matches either product type. DTC = Direct-to-Consumer, POS = Point of Sale. Both are Consumer loans.'
+        }
+      };
+
+      formulaHighlights.forEach(highlight => {
+        highlight.addEventListener('click', () => {
+          // Remove active from all
+          formulaHighlights.forEach(h => h.classList.remove('active'));
+          highlight.classList.add('active');
+
+          const key = highlight.dataset.explain;
+          const exp = explanations[key];
+
+          formulaExplanation.innerHTML = `
+            <h5>${exp.title}</h5>
+            <p>${exp.text}</p>
+          `;
+
+          // Pulse animation
+          animate(formulaExplanation, {
+            scale: [0.98, 1],
+            opacity: [0.8, 1],
+            duration: 300,
+            ease: 'outQuad'
+          });
+        });
+      });
+
+      // ===== Workflow Step Interaction =====
+      const workflowSteps = document.querySelectorAll('.workflow-step');
+
+      workflowSteps.forEach(step => {
+        step.addEventListener('click', () => {
+          workflowSteps.forEach(s => s.classList.remove('active'));
+          step.classList.add('active');
+
+          // Animate indicator
+          animate(step.querySelector('.step-indicator'), {
+            scale: [1, 1.1, 1],
+            duration: 400,
+            ease: 'outElastic(1, .5)'
+          });
+        });
+      });
+
+      // ===== Flow Node Hover Effects =====
+      // Using CSS filter instead of transforms to avoid SVG coordinate conflicts
+
+    });
+  </script>
+</body>
+</html>

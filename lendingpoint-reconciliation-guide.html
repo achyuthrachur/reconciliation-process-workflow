@@ -1,0 +1,2263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coastal Community Bank | LendingPoint Reconciliation Guide</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+  <style>
+    /* ============================================
+       CSS VARIABLES & RESET
+    ============================================ */
+    :root {
+      --bg: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-dark: #1e293b;
+      --bg-darker: #0f172a;
+      --text: #1e293b;
+      --text-light: #475569;
+      --text-muted: #94a3b8;
+      --border: #e2e8f0;
+      --border-light: #f1f5f9;
+
+      /* Brand Colors */
+      --ccb-navy: #1e3a5f;
+      --ccb-blue: #2563eb;
+      --ccb-teal: #0d9488;
+
+      /* Semantic Colors */
+      --success: #10b981;
+      --success-light: #d1fae5;
+      --warning: #f59e0b;
+      --warning-light: #fef3c7;
+      --danger: #ef4444;
+      --danger-light: #fee2e2;
+      --info: #3b82f6;
+      --info-light: #dbeafe;
+
+      /* Flow Colors */
+      --flow-wire: #8b5cf6;
+      --flow-payment: #10b981;
+      --flow-excess: #f59e0b;
+      --flow-chargeoff: #ef4444;
+      --flow-data: #3b82f6;
+
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+
+      --radius: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ============================================
+       HEADER
+    ============================================ */
+    .header {
+      background: linear-gradient(135deg, var(--ccb-navy) 0%, #2d5a87 50%, #1a4a6e 100%);
+      color: white;
+      padding: 40px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header-bg {
+      position: absolute;
+      inset: 0;
+      opacity: 0.1;
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .logo-icon {
+      width: 56px;
+      height: 56px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .logo-text h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-text p {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .header-title {
+      font-size: 2.25rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      opacity: 0;
+    }
+
+    .header-subtitle {
+      font-size: 1.1rem;
+      opacity: 0.85;
+      max-width: 700px;
+    }
+
+    /* ============================================
+       NAVIGATION TABS
+    ============================================ */
+    .nav-container {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nav-tabs {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .nav-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-tab {
+      padding: 16px 24px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-light);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: none;
+      border-left: none;
+      border-right: none;
+      border-top: none;
+    }
+
+    .nav-tab:hover {
+      color: var(--ccb-blue);
+      background: rgba(37, 99, 235, 0.05);
+    }
+
+    .nav-tab.active {
+      color: var(--ccb-blue);
+      border-bottom-color: var(--ccb-blue);
+      background: rgba(37, 99, 235, 0.08);
+    }
+
+    .nav-tab-icon {
+      font-size: 1.1rem;
+    }
+
+    /* ============================================
+       MAIN CONTENT
+    ============================================ */
+    .main-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ============================================
+       SECTION CARDS
+    ============================================ */
+    .section-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .section-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .section-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .section-icon.blue { background: var(--info-light); color: var(--info); }
+    .section-icon.green { background: var(--success-light); color: var(--success); }
+    .section-icon.orange { background: var(--warning-light); color: var(--warning); }
+    .section-icon.red { background: var(--danger-light); color: var(--danger); }
+    .section-icon.purple { background: #ede9fe; color: #7c3aed; }
+    .section-icon.teal { background: #ccfbf1; color: var(--ccb-teal); }
+
+    .section-title h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .section-title p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .section-body {
+      padding: 24px;
+    }
+
+    /* ============================================
+       INTRO CONTENT
+    ============================================ */
+    .intro-text {
+      font-size: 1rem;
+      color: var(--text-light);
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    .intro-text strong {
+      color: var(--text);
+    }
+
+    .key-concept {
+      background: linear-gradient(135deg, var(--info-light) 0%, #f0f9ff 100%);
+      border-left: 4px solid var(--ccb-blue);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .key-concept h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--ccb-blue);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .key-concept p {
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+
+    /* ============================================
+       FLOW DIAGRAMS
+    ============================================ */
+    .flow-container {
+      overflow-x: auto;
+      padding: 20px 0;
+    }
+
+    .flow-svg {
+      display: block;
+      min-width: 100%;
+      max-width: 100%;
+    }
+
+    .flow-node {
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .flow-node:hover {
+      filter: brightness(0.97);
+    }
+
+    .flow-node-rect {
+      rx: 10;
+      ry: 10;
+      stroke-width: 2;
+      transition: all 0.3s ease;
+    }
+
+    .flow-node-rect.source { fill: #dbeafe; stroke: #3b82f6; }
+    .flow-node-rect.process { fill: #d1fae5; stroke: #10b981; }
+    .flow-node-rect.filter { fill: #fef3c7; stroke: #f59e0b; }
+    .flow-node-rect.output { fill: #ede9fe; stroke: #8b5cf6; }
+    .flow-node-rect.error { fill: #fee2e2; stroke: #ef4444; }
+    .flow-node-rect.settlement { fill: #ccfbf1; stroke: #0d9488; }
+
+    .flow-label {
+      font-size: 12px;
+      font-weight: 600;
+      fill: var(--text);
+      pointer-events: none;
+    }
+
+    .flow-sublabel {
+      font-size: 10px;
+      fill: var(--text-light);
+      pointer-events: none;
+    }
+
+    .flow-path {
+      fill: none;
+      stroke: #cbd5e1;
+      stroke-width: 2;
+      stroke-linecap: round;
+    }
+
+    .flow-path.money-in { stroke: var(--success); }
+    .flow-path.money-out { stroke: var(--danger); }
+    .flow-path.data { stroke: var(--info); }
+    .flow-path.error { stroke: var(--warning); stroke-dasharray: 5,5; }
+
+    .flow-arrow {
+      fill: #cbd5e1;
+    }
+
+    .flow-arrow.money-in { fill: var(--success); }
+    .flow-arrow.money-out { fill: var(--danger); }
+
+    /* ============================================
+       INFO GRID
+    ============================================ */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .info-card {
+      background: var(--bg);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      border-left: 4px solid var(--ccb-blue);
+    }
+
+    .info-card.green { border-left-color: var(--success); }
+    .info-card.orange { border-left-color: var(--warning); }
+    .info-card.red { border-left-color: var(--danger); }
+    .info-card.purple { border-left-color: #8b5cf6; }
+    .info-card.teal { border-left-color: var(--ccb-teal); }
+
+    .info-card h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-card p {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      margin-bottom: 12px;
+    }
+
+    .formula-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-family: 'Fira Code', 'Consolas', monospace;
+      font-size: 0.75rem;
+      overflow-x: auto;
+      color: var(--text);
+    }
+
+    /* ============================================
+       PROCESS TIMELINE
+    ============================================ */
+    .timeline {
+      position: relative;
+      padding-left: 48px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 18px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .timeline-step {
+      position: relative;
+      padding: 16px 0;
+    }
+
+    .timeline-marker {
+      position: absolute;
+      left: -48px;
+      top: 16px;
+      width: 36px;
+      height: 36px;
+      background: var(--bg-card);
+      border: 3px solid var(--ccb-blue);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--ccb-blue);
+      z-index: 1;
+    }
+
+    .timeline-step.completed .timeline-marker {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+
+    .timeline-step.error .timeline-marker {
+      background: var(--danger);
+      border-color: var(--danger);
+      color: white;
+    }
+
+    .timeline-content {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+    }
+
+    .timeline-content h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .timeline-content p {
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+
+    .timeline-details {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .detail-list {
+      list-style: none;
+    }
+
+    .detail-list li {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      padding: 6px 0;
+      padding-left: 24px;
+      position: relative;
+    }
+
+    .detail-list li::before {
+      content: '>';
+      position: absolute;
+      left: 0;
+      color: var(--ccb-blue);
+      font-weight: 600;
+    }
+
+    /* ============================================
+       PROBLEM AREAS
+    ============================================ */
+    .problem-card {
+      background: linear-gradient(135deg, var(--danger-light) 0%, #fff5f5 100%);
+      border: 1px solid #fecaca;
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+
+    .problem-card h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--danger);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .problem-card p {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-bottom: 12px;
+    }
+
+    .problem-impact {
+      background: rgba(239, 68, 68, 0.1);
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 0.85rem;
+    }
+
+    .problem-impact strong {
+      color: var(--danger);
+    }
+
+    .solution-card {
+      background: linear-gradient(135deg, var(--success-light) 0%, #f0fdf4 100%);
+      border: 1px solid #bbf7d0;
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+
+    .solution-card h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--success);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .solution-card p {
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+
+    /* ============================================
+       ANIMATED FLOW VISUALIZATION
+    ============================================ */
+    .animated-flow {
+      position: relative;
+      padding: 40px 20px;
+      min-height: 400px;
+    }
+
+    .flow-stage {
+      position: absolute;
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      text-align: center;
+      min-width: 140px;
+      box-shadow: var(--shadow-sm);
+      opacity: 0;
+      transform: scale(0.8);
+    }
+
+    .flow-stage.source { border-color: var(--info); background: var(--info-light); }
+    .flow-stage.process { border-color: var(--success); background: var(--success-light); }
+    .flow-stage.output { border-color: #8b5cf6; background: #ede9fe; }
+    .flow-stage.error { border-color: var(--danger); background: var(--danger-light); }
+
+    .flow-stage h5 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .flow-stage p {
+      font-size: 0.75rem;
+      color: var(--text-light);
+    }
+
+    .flow-particle {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--ccb-blue);
+      opacity: 0;
+    }
+
+    /* ============================================
+       STATS CARDS
+    ============================================ */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+    }
+
+    .stat-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* ============================================
+       WIRE RECONCILIATION VISUAL
+    ============================================ */
+    .wire-equation {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding: 30px 20px;
+    }
+
+    .wire-box {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 28px;
+      text-align: center;
+      min-width: 160px;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .wire-box.credit { border-color: var(--success); background: var(--success-light); }
+    .wire-box.debit { border-color: var(--danger); background: var(--danger-light); }
+    .wire-box.result { border-color: var(--ccb-blue); background: var(--info-light); }
+    .wire-box.zero { border-color: var(--success); background: var(--success-light); }
+
+    .wire-box .label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .wire-box .value {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .wire-operator {
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      opacity: 0;
+    }
+
+    /* ============================================
+       CHARGE-OFF JOURNEY
+    ============================================ */
+    .journey-track {
+      position: relative;
+      padding: 60px 0 40px;
+    }
+
+    .journey-line {
+      position: absolute;
+      top: 80px;
+      left: 40px;
+      right: 40px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+    }
+
+    .journey-progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--info), var(--warning), var(--danger));
+      border-radius: 2px;
+    }
+
+    .journey-stages {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+    }
+
+    .journey-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      max-width: 100px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .journey-stage:hover {
+      transform: translateY(-2px);
+    }
+
+    .stage-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--bg-card);
+      border: 3px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .journey-stage.active .stage-icon {
+      background: var(--ccb-blue);
+      border-color: var(--ccb-blue);
+      color: white;
+      transform: scale(1.15);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .stage-title {
+      font-weight: 600;
+      font-size: 0.8rem;
+      margin-bottom: 4px;
+    }
+
+    .stage-desc {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .stage-detail-panel {
+      background: var(--bg);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-top: 30px;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .stage-detail-panel.active {
+      display: block;
+    }
+
+    /* ============================================
+       GLOSSARY
+    ============================================ */
+    .glossary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .glossary-item {
+      background: var(--bg);
+      border-radius: var(--radius);
+      padding: 16px;
+      border-left: 3px solid var(--ccb-blue);
+    }
+
+    .glossary-item dt {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .glossary-item dd {
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+
+    /* ============================================
+       RESPONSIVE
+    ============================================ */
+    @media (max-width: 768px) {
+      .header {
+        padding: 24px 16px;
+      }
+
+      .header-title {
+        font-size: 1.75rem;
+      }
+
+      .nav-tab {
+        padding: 12px 16px;
+        font-size: 0.85rem;
+      }
+
+      .main-content {
+        padding: 20px 16px;
+      }
+
+      .section-body {
+        padding: 16px;
+      }
+
+      .wire-equation {
+        flex-direction: column;
+      }
+
+      .journey-stages {
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+      }
+    }
+
+    /* ============================================
+       PRINT STYLES
+    ============================================ */
+    @media print {
+      .nav-container {
+        display: none;
+      }
+
+      .tab-panel {
+        display: block !important;
+        page-break-before: always;
+      }
+
+      .section-card {
+        box-shadow: none;
+        border: 1px solid var(--border);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================
+     HEADER
+============================================ -->
+<header class="header">
+  <svg class="header-bg" viewBox="0 0 1200 200" preserveAspectRatio="none">
+    <defs>
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#grid)"/>
+    <circle cx="100" cy="100" r="80" fill="rgba(255,255,255,0.03)"/>
+    <circle cx="1100" cy="50" r="120" fill="rgba(255,255,255,0.02)"/>
+  </svg>
+
+  <div class="header-content">
+    <div class="header-top">
+      <div class="logo-icon">🏦</div>
+      <div class="logo-text">
+        <h1>Coastal Community Bank</h1>
+        <p>Operations & Reconciliation</p>
+      </div>
+    </div>
+    <h2 class="header-title">LendingPoint Reconciliation Process Guide</h2>
+    <p class="header-subtitle">A comprehensive guide to understanding how loan payments flow through our systems, where reconciliation happens, and how we identify and resolve discrepancies.</p>
+  </div>
+</header>
+
+<!-- ============================================
+     NAVIGATION
+============================================ -->
+<nav class="nav-container">
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-tab="overview">
+      <span class="nav-tab-icon">📚</span>
+      Overview
+    </button>
+    <button class="nav-tab" data-tab="repayments">
+      <span class="nav-tab-icon">💰</span>
+      Repayments Flow
+    </button>
+    <button class="nav-tab" data-tab="purchase">
+      <span class="nav-tab-icon">📊</span>
+      Purchase Parse
+    </button>
+    <button class="nav-tab" data-tab="chargeoff">
+      <span class="nav-tab-icon">📉</span>
+      Charge-Off Lifecycle
+    </button>
+    <button class="nav-tab" data-tab="problems">
+      <span class="nav-tab-icon">⚠️</span>
+      Where It Breaks
+    </button>
+    <button class="nav-tab" data-tab="glossary">
+      <span class="nav-tab-icon">📖</span>
+      Glossary
+    </button>
+  </div>
+</nav>
+
+<!-- ============================================
+     MAIN CONTENT
+============================================ -->
+<main class="main-content">
+
+  <!-- ==========================================
+       TAB: OVERVIEW
+  ========================================== -->
+  <div id="overview" class="tab-panel active">
+
+    <!-- What is Reconciliation -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon blue">🎯</div>
+        <div class="section-title">
+          <h2>What is Reconciliation?</h2>
+          <p>Understanding the fundamental purpose of this process</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <p class="intro-text">
+          <strong>Reconciliation</strong> is the process of verifying that two sets of records match. In banking, we reconcile to ensure that the money we receive matches what we expect to receive, and that the money we send out matches what we intend to send.
+        </p>
+
+        <p class="intro-text">
+          For the LendingPoint partnership, Coastal Community Bank (CCB) acts as the <strong>bank of record</strong> for consumer and commercial loans. LendingPoint originates and services the loans, but CCB holds the underlying accounts. Every day, payments flow between borrowers, LendingPoint, and CCB. <strong>Reconciliation ensures every dollar is accounted for.</strong>
+        </p>
+
+        <div class="key-concept">
+          <h4>💡 The Core Question</h4>
+          <p>At the end of each day, does the cash in our settlement account match what the transactions say should be there? If not, why not, and how do we fix it?</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-card blue">
+            <h4>📥 Money Coming In</h4>
+            <p>Wire transfers from LendingPoint containing borrower payments (principal, interest, fees)</p>
+          </div>
+          <div class="info-card green">
+            <h4>📤 Money Going Out</h4>
+            <p>Loan payments applied to accounts, refunds to borrowers, fees to service providers</p>
+          </div>
+          <div class="info-card orange">
+            <h4>⚖️ The Balance</h4>
+            <p>After matching all ins and outs, the settlement account should balance to zero (or a known outstanding amount)</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- The Two Main Processes -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon purple">🔀</div>
+        <div class="section-title">
+          <h2>Two Reconciliation Streams</h2>
+          <p>Different processes for different aspects of the partnership</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="info-grid">
+          <div class="info-card purple">
+            <h4>💵 Repayments Settlement (Account 1600020521)</h4>
+            <p>Tracks the <strong>Participation Agreement (PA)</strong> payments - the daily wire transfers that settle borrower payments back to CCB.</p>
+            <p><strong>File:</strong> DAILY LendingPoint Repayment workbook</p>
+            <p><strong>Frequency:</strong> Daily reconciliation, monthly certification</p>
+          </div>
+          <div class="info-card teal">
+            <h4>📈 Purchase Parse (Macro Workbook)</h4>
+            <p>Processes loan-level payment data, generates journal entries (ATE), and tracks charge-offs for <strong>purchased loans</strong>.</p>
+            <p><strong>File:</strong> Macro Purchase Parse workbook</p>
+            <p><strong>Frequency:</strong> Daily processing with automated formulas</p>
+          </div>
+        </div>
+
+        <div class="key-concept">
+          <h4>🔗 How They Connect</h4>
+          <p>The Repayments workbook reconciles the <em>cash</em> (did we get the right wire amount?), while the Purchase Parse workbook reconciles the <em>details</em> (which loans did payments apply to, and do the totals match?). Both must agree for the books to balance.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Players -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon teal">👥</div>
+        <div class="section-title">
+          <h2>Key Players in the Process</h2>
+          <p>Who and what is involved</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-icon">🏦</div>
+            <div class="stat-value">CCB</div>
+            <div class="stat-label">Bank of Record</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🤝</div>
+            <div class="stat-value">LP</div>
+            <div class="stat-label">LendingPoint Partner</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">💳</div>
+            <div class="stat-value">32K+</div>
+            <div class="stat-label">Active Loans</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-value">~60K</div>
+            <div class="stat-label">Transactions/File</div>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-card">
+            <h4>📁 Horizon System</h4>
+            <p>CCB's core banking system - source of truth for bank transaction records, balances, and wire activity.</p>
+          </div>
+          <div class="info-card green">
+            <h4>📡 SFTP Files</h4>
+            <p>Daily data files from LendingPoint containing payment details, loan status, and transaction breakdowns.</p>
+          </div>
+          <div class="info-card orange">
+            <h4>📑 Adra System</h4>
+            <p>Month-end reporting and certification system where reconciliation results are validated.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ==========================================
+       TAB: REPAYMENTS FLOW
+  ========================================== -->
+  <div id="repayments" class="tab-panel">
+
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon blue">🌊</div>
+        <div class="section-title">
+          <h2>Daily Repayments Flow</h2>
+          <p>How borrower payments move through the settlement account</p>
+        </div>
+      </div>
+      <div class="section-body">
+
+        <p class="intro-text">
+          Every business day, LendingPoint collects payments from borrowers and sends a wire transfer to CCB's settlement account (1600020521). The reconciliation process verifies that this wire matches the expected payment amounts, tracks any differences, and ensures proper accounting.
+        </p>
+
+        <!-- Animated Wire Flow -->
+        <div class="flow-container">
+          <svg id="repayment-flow-svg" class="flow-svg" viewBox="0 0 1000 380" preserveAspectRatio="xMidYMid meet">
+            <!-- Background Grid -->
+            <defs>
+              <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8"/>
+              </marker>
+              <marker id="arrowhead-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#10b981"/>
+              </marker>
+              <marker id="arrowhead-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444"/>
+              </marker>
+            </defs>
+
+            <!-- Node: Borrowers -->
+            <g class="flow-node" data-info="borrowers">
+              <rect class="flow-node-rect source" x="20" y="140" width="120" height="70"/>
+              <text class="flow-label" x="80" y="170" text-anchor="middle">Borrowers</text>
+              <text class="flow-sublabel" x="80" y="188" text-anchor="middle">Make Payments</text>
+            </g>
+
+            <!-- Node: LendingPoint -->
+            <g class="flow-node" data-info="lendingpoint">
+              <rect class="flow-node-rect process" x="200" y="140" width="140" height="70"/>
+              <text class="flow-label" x="270" y="170" text-anchor="middle">LendingPoint</text>
+              <text class="flow-sublabel" x="270" y="188" text-anchor="middle">Collects & Remits</text>
+            </g>
+
+            <!-- Node: Wire Transfer -->
+            <g class="flow-node" data-info="wire">
+              <rect class="flow-node-rect settlement" x="400" y="140" width="160" height="70"/>
+              <text class="flow-label" x="480" y="165" text-anchor="middle">Wire Transfer</text>
+              <text class="flow-sublabel" x="480" y="183" text-anchor="middle">LP MASTER COLLECTION</text>
+              <text class="flow-sublabel" x="480" y="198" text-anchor="middle">TRUST 2020</text>
+            </g>
+
+            <!-- Node: Settlement Account -->
+            <g class="flow-node" data-info="settlement">
+              <rect class="flow-node-rect output" x="620" y="140" width="140" height="70"/>
+              <text class="flow-label" x="690" y="170" text-anchor="middle">Settlement Acct</text>
+              <text class="flow-sublabel" x="690" y="188" text-anchor="middle">1600020521</text>
+            </g>
+
+            <!-- Node: Loan Payment -->
+            <g class="flow-node" data-info="loanpayment">
+              <rect class="flow-node-rect process" x="820" y="80" width="140" height="60"/>
+              <text class="flow-label" x="890" y="105" text-anchor="middle">Loan Payment</text>
+              <text class="flow-sublabel" x="890" y="123" text-anchor="middle">PA / PURCH</text>
+            </g>
+
+            <!-- Node: Excess/Refund -->
+            <g class="flow-node" data-info="excess">
+              <rect class="flow-node-rect filter" x="820" y="160" width="140" height="60"/>
+              <text class="flow-label" x="890" y="185" text-anchor="middle">Excess/Refund</text>
+              <text class="flow-sublabel" x="890" y="203" text-anchor="middle">Overpayments</text>
+            </g>
+
+            <!-- Node: Adjustments -->
+            <g class="flow-node" data-info="adjustments">
+              <rect class="flow-node-rect error" x="820" y="240" width="140" height="60"/>
+              <text class="flow-label" x="890" y="265" text-anchor="middle">Adjustments</text>
+              <text class="flow-sublabel" x="890" y="283" text-anchor="middle">OOB, Wire Diff</text>
+            </g>
+
+            <!-- Paths -->
+            <path class="flow-path repayment-path" d="M140,175 L195,175" marker-end="url(#arrowhead)"/>
+            <path class="flow-path repayment-path money-in" d="M340,175 L395,175" marker-end="url(#arrowhead-green)"/>
+            <path class="flow-path repayment-path money-in" d="M560,175 L615,175" marker-end="url(#arrowhead-green)"/>
+            <path class="flow-path repayment-path money-out" d="M760,160 L815,110" marker-end="url(#arrowhead-red)"/>
+            <path class="flow-path repayment-path" d="M760,175 L815,190" marker-end="url(#arrowhead)"/>
+            <path class="flow-path repayment-path error" d="M760,190 L815,270" marker-end="url(#arrowhead)"/>
+
+            <!-- Labels -->
+            <text class="flow-sublabel" x="480" y="130" text-anchor="middle" fill="#10b981">Credit (Inbound)</text>
+            <text class="flow-sublabel" x="870" y="65" text-anchor="middle" fill="#ef4444">Debit (Applied)</text>
+
+            <!-- Balance Check -->
+            <g class="flow-node" data-info="balance">
+              <rect class="flow-node-rect settlement" x="620" y="300" width="140" height="50" rx="25"/>
+              <text class="flow-label" x="690" y="330" text-anchor="middle">Balance = $0?</text>
+            </g>
+            <path class="flow-path" d="M690,210 L690,295" stroke-dasharray="5,5"/>
+          </svg>
+        </div>
+
+        <div class="key-concept">
+          <h4>⚖️ The Fundamental Equation</h4>
+          <p><strong>Wire In (Credit)</strong> + <strong>Loan Payment (Debit)</strong> = <strong>~$0.00</strong><br>
+          Any difference should be within rounding tolerance (typically less than $0.10 per day)</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Wire Reconciliation Visual -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon green">✅</div>
+        <div class="section-title">
+          <h2>Wire Matching in Action</h2>
+          <p>See how credits and debits balance</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="wire-equation" id="wire-equation">
+          <div class="wire-box credit">
+            <div class="label">Wire In (Credit)</div>
+            <div class="value">-$1,505,584.72</div>
+          </div>
+          <div class="wire-operator">+</div>
+          <div class="wire-box debit">
+            <div class="label">Loan Payment (Debit)</div>
+            <div class="value">+$1,505,584.80</div>
+          </div>
+          <div class="wire-operator">=</div>
+          <div class="wire-box result">
+            <div class="label">Wire Difference</div>
+            <div class="value">+$0.08</div>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-card green">
+            <h4>✓ Perfect Match</h4>
+            <p>When Wire + Payment = $0.00, the transactions clear immediately with no adjustments needed.</p>
+          </div>
+          <div class="info-card orange">
+            <h4>~ Rounding Difference</h4>
+            <p>Small differences (typically under $0.20) are tracked and accumulated for monthly true-up with LendingPoint.</p>
+          </div>
+          <div class="info-card red">
+            <h4>✗ Large Variance</h4>
+            <p>Significant differences require investigation - could indicate missing transactions, incorrect amounts, or system errors.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Daily Process Steps -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon orange">📋</div>
+        <div class="section-title">
+          <h2>Daily Reconciliation Steps</h2>
+          <p>The workflow performed each business day</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="timeline" id="daily-timeline">
+          <div class="timeline-step">
+            <div class="timeline-marker">1</div>
+            <div class="timeline-content">
+              <h4>Download Transactions</h4>
+              <p>Pull transaction data from Horizon system, including prior day for backdated entries.</p>
+              <div class="timeline-details">
+                <ul class="detail-list">
+                  <li>Access Horizon or H360 extract</li>
+                  <li>Set date range (include prior day)</li>
+                  <li>Export to Horiz_Trx sheet</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="timeline-marker">2</div>
+            <div class="timeline-content">
+              <h4>Import to Workbook</h4>
+              <p>Append transactions to the Horiz_Trx sheet, applying conversion formulas.</p>
+              <div class="timeline-details">
+                <div class="formula-box">=IF(E2="",F2*-1,E2)  // Convert Debit/Credit to Net</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="timeline-marker">3</div>
+            <div class="timeline-content">
+              <h4>Create Daily Sheet</h4>
+              <p>Copy prior day's sheet, update date (G1) and Horizon balance (D4).</p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="timeline-marker">4</div>
+            <div class="timeline-content">
+              <h4>Match & Clear Transactions</h4>
+              <p>Pair wires with payments, move matched pairs to "Cleared Items" section.</p>
+              <div class="timeline-details">
+                <ul class="detail-list">
+                  <li>Wire In + Loan Payment PA = ~$0</li>
+                  <li>Wire In + Loan Payment PURCH = ~$0</li>
+                  <li>Group and border each cleared set</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="timeline-marker">5</div>
+            <div class="timeline-content">
+              <h4>Record Adjustments</h4>
+              <p>Enter OOB adjustments and wire differences in their respective sections.</p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="timeline-marker">6</div>
+            <div class="timeline-content">
+              <h4>Verify Balance</h4>
+              <p>Cell D77 must equal $0.00 (Horizon Balance + Sum of Uncleared = Zero).</p>
+              <div class="timeline-details">
+                <div class="formula-box">=D4+D76  // Must equal $0.00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ==========================================
+       TAB: PURCHASE PARSE
+  ========================================== -->
+  <div id="purchase" class="tab-panel">
+
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon teal">⚙️</div>
+        <div class="section-title">
+          <h2>Purchase Parse Workbook</h2>
+          <p>Automated processing of loan-level payment data</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <p class="intro-text">
+          The Macro Purchase Parse workbook is a sophisticated Excel-based system that processes daily loan data from LendingPoint. It generates journal entries (ATE - Accounting Template Entries) for the general ledger, tracks charge-offs, and validates that all transactions reconcile properly.
+        </p>
+
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-value">15</div>
+            <div class="stat-label">Worksheets</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📝</div>
+            <div class="stat-value">~60K</div>
+            <div class="stat-label">Payment Records</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📈</div>
+            <div class="stat-value">32K</div>
+            <div class="stat-label">Loan Snapshots</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🔄</div>
+            <div class="stat-value">VBA</div>
+            <div class="stat-label">Macro Automation</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Data Flow Diagram -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon blue">🔀</div>
+        <div class="section-title">
+          <h2>Data Flow Architecture</h2>
+          <p>How data moves through the workbook</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="flow-container">
+          <svg id="purchase-flow-svg" class="flow-svg" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet">
+            <!-- Input Layer -->
+            <text class="flow-label" x="80" y="30" text-anchor="middle" fill="#64748b">INPUTS</text>
+
+            <g class="flow-node">
+              <rect class="flow-node-rect source" x="20" y="50" width="120" height="60"/>
+              <text class="flow-label" x="80" y="75" text-anchor="middle">Day1_Tape</text>
+              <text class="flow-sublabel" x="80" y="93" text-anchor="middle">32,292 loans</text>
+            </g>
+
+            <g class="flow-node">
+              <rect class="flow-node-rect source" x="20" y="130" width="120" height="60"/>
+              <text class="flow-label" x="80" y="155" text-anchor="middle">Day2_Tape</text>
+              <text class="flow-sublabel" x="80" y="173" text-anchor="middle">32,292 loans</text>
+            </g>
+
+            <g class="flow-node">
+              <rect class="flow-node-rect source" x="20" y="210" width="120" height="60"/>
+              <text class="flow-label" x="80" y="235" text-anchor="middle">Pymt_File</text>
+              <text class="flow-sublabel" x="80" y="253" text-anchor="middle">59,812 txns</text>
+            </g>
+
+            <!-- Processing Layer -->
+            <text class="flow-label" x="300" y="30" text-anchor="middle" fill="#64748b">PARSE SHEET</text>
+
+            <g class="flow-node">
+              <rect class="flow-node-rect process" x="220" y="100" width="160" height="100"/>
+              <text class="flow-label" x="300" y="135" text-anchor="middle">Parse</text>
+              <text class="flow-sublabel" x="300" y="155" text-anchor="middle">Settlement Date Filter</text>
+              <text class="flow-sublabel" x="300" y="172" text-anchor="middle">ATE Entry Generation</text>
+              <text class="flow-sublabel" x="300" y="189" text-anchor="middle">Backchecks</text>
+            </g>
+
+            <!-- Filter Layer -->
+            <text class="flow-label" x="520" y="30" text-anchor="middle" fill="#64748b">FILTERS</text>
+
+            <g class="flow-node">
+              <rect class="flow-node-rect filter" x="450" y="50" width="140" height="55"/>
+              <text class="flow-label" x="520" y="73" text-anchor="middle">Excess_Filter</text>
+              <text class="flow-sublabel" x="520" y="91" text-anchor="middle">Overpayments</text>
+            </g>
+
+            <g class="flow-node">
+              <rect class="flow-node-rect filter" x="450" y="120" width="140" height="55"/>
+              <text class="flow-label" x="520" y="143" text-anchor="middle">OOB_Filter</text>
+              <text class="flow-sublabel" x="520" y="161" text-anchor="middle">Penny Rounding</text>
+            </g>
+
+            <g class="flow-node">
+              <rect class="flow-node-rect error" x="450" y="190" width="140" height="55"/>
+              <text class="flow-label" x="520" y="213" text-anchor="middle">120-ChargeOff</text>
+              <text class="flow-sublabel" x="520" y="231" text-anchor="middle">120+ DPD</text>
+            </g>
+
+            <g class="flow-node">
+              <rect class="flow-node-rect error" x="450" y="260" width="140" height="55"/>
+              <text class="flow-label" x="520" y="283" text-anchor="middle">180-ChargeOff</text>
+              <text class="flow-sublabel" x="520" y="301" text-anchor="middle">180+ DPD</text>
+            </g>
+
+            <!-- Output Layer -->
+            <text class="flow-label" x="780" y="30" text-anchor="middle" fill="#64748b">OUTPUTS</text>
+
+            <g class="flow-node">
+              <rect class="flow-node-rect output" x="700" y="70" width="160" height="70"/>
+              <text class="flow-label" x="780" y="100" text-anchor="middle">ATE Entries</text>
+              <text class="flow-sublabel" x="780" y="118" text-anchor="middle">Journal to GL</text>
+            </g>
+
+            <g class="flow-node">
+              <rect class="flow-node-rect output" x="700" y="160" width="160" height="55"/>
+              <text class="flow-label" x="780" y="183" text-anchor="middle">120Subledger</text>
+              <text class="flow-sublabel" x="780" y="201" text-anchor="middle">15,008 records</text>
+            </g>
+
+            <g class="flow-node">
+              <rect class="flow-node-rect output" x="700" y="230" width="160" height="55"/>
+              <text class="flow-label" x="780" y="253" text-anchor="middle">180Subledger</text>
+              <text class="flow-sublabel" x="780" y="271" text-anchor="middle">9,145 records</text>
+            </g>
+
+            <g class="flow-node">
+              <rect class="flow-node-rect output" x="700" y="300" width="160" height="55"/>
+              <text class="flow-label" x="780" y="323" text-anchor="middle">Pymt_Export</text>
+              <text class="flow-sublabel" x="780" y="341" text-anchor="middle">To Data Team</text>
+            </g>
+
+            <!-- Connecting Paths -->
+            <path class="flow-path purchase-path" d="M140,80 L215,130" marker-end="url(#arrowhead)"/>
+            <path class="flow-path purchase-path" d="M140,160 L215,150" marker-end="url(#arrowhead)"/>
+            <path class="flow-path purchase-path" d="M140,240 L215,170" marker-end="url(#arrowhead)"/>
+
+            <path class="flow-path purchase-path" d="M380,120 L445,77" marker-end="url(#arrowhead)"/>
+            <path class="flow-path purchase-path" d="M380,140 L445,147" marker-end="url(#arrowhead)"/>
+            <path class="flow-path purchase-path" d="M380,160 L445,217" marker-end="url(#arrowhead)"/>
+            <path class="flow-path purchase-path" d="M380,180 L445,287" marker-end="url(#arrowhead)"/>
+
+            <path class="flow-path purchase-path" d="M590,77 L695,105" marker-end="url(#arrowhead)"/>
+            <path class="flow-path purchase-path" d="M590,147 L695,105" marker-end="url(#arrowhead)"/>
+            <path class="flow-path purchase-path" d="M590,217 L695,187" marker-end="url(#arrowhead)"/>
+            <path class="flow-path purchase-path" d="M590,287 L695,257" marker-end="url(#arrowhead)"/>
+
+            <!-- Validation Checks Box -->
+            <g class="flow-node">
+              <rect class="flow-node-rect settlement" x="220" y="380" width="540" height="80" rx="8"/>
+              <text class="flow-label" x="490" y="410" text-anchor="middle">Validation Checks</text>
+              <text class="flow-sublabel" x="490" y="430" text-anchor="middle">N15: Sub-entries Match | N16: Wire Match | N21: Credits = Debits | N32: CO Entries Match</text>
+              <text class="flow-sublabel" x="490" y="448" text-anchor="middle">All checks must show "Y" before processing is complete</text>
+            </g>
+
+            <path class="flow-path" d="M300,200 L300,375" stroke-dasharray="5,5"/>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Transaction Categories -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon orange">📑</div>
+        <div class="section-title">
+          <h2>Transaction Categories</h2>
+          <p>Understanding the different types of transactions processed</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="info-grid">
+          <div class="info-card green">
+            <h4>LPT- (Loan Payment Transactions)</h4>
+            <p>Regular payments from borrowers. These are the primary inflows, broken down into Principal, Interest, and Fees.</p>
+            <div class="formula-box">LPT-0123456789 = $500.00 (P: $350 + I: $140 + F: $10)</div>
+          </div>
+          <div class="info-card red">
+            <h4>RTA- (Return Transactions)</h4>
+            <p>Payment reversals - when an ACH bounces, check returns, or card payment fails. These are negative amounts.</p>
+            <div class="formula-box">RTA-0123456789 = -$500.00 (Reverses original LPT)</div>
+          </div>
+          <div class="info-card purple">
+            <h4>ADJ- (Adjustments)</h4>
+            <p>Corrections, refunds, spread corrections, and other manual adjustments. Can be positive or negative.</p>
+            <div class="formula-box">ADJ-0123456789 = -$25.00 (Refund to borrower)</div>
+          </div>
+          <div class="info-card orange">
+            <h4>CHG- (Charge Transactions)</h4>
+            <p>Fee charges applied to loans. Less common but included in daily processing.</p>
+          </div>
+        </div>
+
+        <div class="key-concept">
+          <h4>🏷️ Product Types</h4>
+          <p><strong>Consumer:</strong> DTC (Direct-to-Consumer), POS (Point of Sale)<br>
+          <strong>Commercial:</strong> eBay, JOOR<br>
+          Each product type maps to different GL accounts for proper accounting.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Validation Checks -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon green">✓</div>
+        <div class="section-title">
+          <h2>Validation Checks</h2>
+          <p>The automated controls that ensure accuracy</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="info-grid">
+          <div class="info-card green">
+            <h4>N15: Sub-entries Match Top Debit</h4>
+            <p>Verifies that all calculated sub-entries equal the total wire amount.</p>
+            <div class="formula-box">=IF($N$14=$C$9,"Y","N")</div>
+          </div>
+          <div class="info-card green">
+            <h4>N16: Top Debit Match Wire</h4>
+            <p>Confirms actual wire amount equals calculated total.</p>
+            <div class="formula-box">=IF($C$4=$N$14,"Y","N")</div>
+          </div>
+          <div class="info-card green">
+            <h4>N21: Credits = Debits</h4>
+            <p>Journal must balance - total debits must equal total credits.</p>
+            <div class="formula-box">=IF(N19=N20,"Y","N")</div>
+          </div>
+          <div class="info-card green">
+            <h4>N32: C/O Sold Entries Match</h4>
+            <p>Charge-off sale proceeds match between source and ATE entries.</p>
+            <div class="formula-box">=IF(ABS(SUM($N$30:$P$31))=$C$20,"Y","N")</div>
+          </div>
+        </div>
+
+        <div class="problem-card">
+          <h4>⚠️ When Checks Fail</h4>
+          <p>If any validation check shows "N", processing cannot continue. Common causes include:</p>
+          <div class="problem-impact">
+            <strong>Wire Variance:</strong> Actual wire differs from calculated (often OOB rounding)<br>
+            <strong>Missing Transactions:</strong> Not all records loaded from SFTP<br>
+            <strong>Data Corruption:</strong> Invalid values in source files
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ==========================================
+       TAB: CHARGE-OFF LIFECYCLE
+  ========================================== -->
+  <div id="chargeoff" class="tab-panel">
+
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon red">📉</div>
+        <div class="section-title">
+          <h2>Charge-Off Lifecycle</h2>
+          <p>What happens when loans become severely delinquent</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <p class="intro-text">
+          When borrowers stop making payments, loans progress through stages of delinquency. The charge-off process ensures these non-performing assets are properly accounted for, tracked, and eventually written off or sold.
+        </p>
+
+        <!-- Journey Visualization -->
+        <div class="journey-track">
+          <div class="journey-line">
+            <div class="journey-progress" id="journey-progress"></div>
+          </div>
+          <div class="journey-stages" id="journey-stages">
+            <div class="journey-stage active" data-stage="active">
+              <div class="stage-icon">✓</div>
+              <div class="stage-title">Active</div>
+              <div class="stage-desc">Current</div>
+            </div>
+            <div class="journey-stage" data-stage="delinquent">
+              <div class="stage-icon">⏰</div>
+              <div class="stage-title">Delinquent</div>
+              <div class="stage-desc">30-89 DPD</div>
+            </div>
+            <div class="journey-stage" data-stage="dpd120">
+              <div class="stage-icon">⚠️</div>
+              <div class="stage-title">120+ DPD</div>
+              <div class="stage-desc">CCB Subledger</div>
+            </div>
+            <div class="journey-stage" data-stage="lpchargeoff">
+              <div class="stage-icon">📋</div>
+              <div class="stage-title">LP Charge-Off</div>
+              <div class="stage-desc">180 DPD</div>
+            </div>
+            <div class="journey-stage" data-stage="resolution">
+              <div class="stage-icon">🔚</div>
+              <div class="stage-title">Resolution</div>
+              <div class="stage-desc">Sold/Settled</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage Detail Panels -->
+        <div class="stage-detail-panel active" id="detail-active">
+          <h4>Active Loan Status</h4>
+          <p>Loan is current - borrower is making payments as scheduled. Principal and interest balances are tracked normally in the loan tape.</p>
+        </div>
+
+        <div class="stage-detail-panel" id="detail-delinquent">
+          <h4>Early Delinquency (30-89 Days Past Due)</h4>
+          <p>Borrower has missed payments but is not yet severely delinquent. Collections efforts begin. Loan remains on standard tracking.</p>
+        </div>
+
+        <div class="stage-detail-panel" id="detail-dpd120">
+          <h4>120+ Days Past Due - CCB Recognition</h4>
+          <p>At 120 DPD, CCB recognizes the loan as impaired. It enters the <strong>120-ChargeOff</strong> sheet and is added to the <strong>120Subledger</strong>.</p>
+          <div class="formula-box">Filter: DPD > 119 AND Charge_Off_Date is blank AND Status not Canceled/Closed</div>
+          <p style="margin-top: 12px;">The workbook compares Day1_Tape to Day2_Tape to identify:</p>
+          <ul class="detail-list">
+            <li><strong>NEW:</strong> Loans newly crossing 120 DPD threshold</li>
+            <li><strong>DROP:</strong> Loans leaving the bucket (paid off, charged off by LP, or canceled)</li>
+            <li><strong>Balance Changes:</strong> Principal/Interest changes on existing 120+ loans</li>
+          </ul>
+        </div>
+
+        <div class="stage-detail-panel" id="detail-lpchargeoff">
+          <h4>LendingPoint Charge-Off (180 DPD)</h4>
+          <p>At 180 DPD, LendingPoint formally charges off the loan. The <strong>Charge_Off_Date</strong> field gets populated. The loan moves from 120-ChargeOff tracking to <strong>180-ChargeOff</strong> and the <strong>180Subledger</strong>.</p>
+          <div class="formula-box">Filter: Charge_Off_Date is NOT blank (Column T populated)</div>
+        </div>
+
+        <div class="stage-detail-panel" id="detail-resolution">
+          <h4>Final Resolution</h4>
+          <p>Charged-off loans are eventually resolved through:</p>
+          <ul class="detail-list">
+            <li><strong>Sold:</strong> Sold to debt buyers (CO Sale Proceeds)</li>
+            <li><strong>Settled:</strong> Borrower pays partial amount</li>
+            <li><strong>Obligations Met:</strong> Borrower pays in full</li>
+            <li><strong>Canceled:</strong> Loan voided (fraud, error)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5-Section Reconciliation -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon purple">🧮</div>
+        <div class="section-title">
+          <h2>Charge-Off Reconciliation</h2>
+          <p>How the workbook tracks balance changes</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <p class="intro-text">
+          The charge-off sheets perform a 5-section reconciliation to explain why the portfolio balance changed from Day1 to Day2:
+        </p>
+
+        <div class="info-grid">
+          <div class="info-card blue">
+            <h4>#1 New Loans</h4>
+            <p>Loans entering the 120+ DPD bucket (newly delinquent to this threshold)</p>
+          </div>
+          <div class="info-card green">
+            <h4>#2 Balance Changes</h4>
+            <p>Principal/Interest changes on loans already in the bucket (payments, interest accrual)</p>
+          </div>
+          <div class="info-card orange">
+            <h4>#3 Charged Off by LP</h4>
+            <p>Loans that LendingPoint charged off (moved to 180-ChargeOff)</p>
+          </div>
+          <div class="info-card red">
+            <h4>#4 Dropped - Not CO</h4>
+            <p>Loans that left unexpectedly - requires investigation</p>
+          </div>
+          <div class="info-card purple">
+            <h4>#5 Obligations Met</h4>
+            <p>Loans paid off in full by borrower</p>
+          </div>
+        </div>
+
+        <div class="key-concept">
+          <h4>📊 The Reconciliation Formula</h4>
+          <p><strong>Day2 Balance = Day1 Balance + New Loans + Balance Changes - Charged Off - Dropped - Paid Off</strong><br>
+          If this doesn't balance, there's a data issue that must be investigated.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ==========================================
+       TAB: WHERE IT BREAKS
+  ========================================== -->
+  <div id="problems" class="tab-panel">
+
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon red">🔥</div>
+        <div class="section-title">
+          <h2>Known Problem Areas</h2>
+          <p>Where the reconciliation process breaks down</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <p class="intro-text">
+          Despite careful design, several persistent issues affect the reconciliation process. Understanding these problems is the first step to fixing them.
+        </p>
+
+        <div class="problem-card">
+          <h4>🚨 Critical Issue #1: $1.3M Legacy Carry Over</h4>
+          <p>A balance of approximately <strong>$1,332,205.21</strong> has been carried forward since August 2023 when LendingPoint migrated their systems.</p>
+          <div class="problem-impact">
+            <strong>Root Cause:</strong> Canceled loans not reported to CCB; Excess payments not refunded to borrowers during migration.<br>
+            <strong>Age:</strong> 2+ years unresolved<br>
+            <strong>Impact:</strong> Requires manual exclusion from reconciliation; obscures other issues; audit risk
+          </div>
+        </div>
+
+        <div class="problem-card">
+          <h4>🚨 Critical Issue #2: Broken Cert Sheet Formulas</h4>
+          <p>The month-end certification sheet contains multiple <strong>#REF!</strong> errors due to broken cell references.</p>
+          <div class="problem-impact">
+            <strong>Affected Cells:</strong> D12, D13, D14, D15, D16, D22, F24, F26<br>
+            <strong>Impact:</strong> Cannot validate month-end certification difference = $0.00; manual workarounds required
+          </div>
+        </div>
+
+        <div class="problem-card">
+          <h4>⚠️ Issue #3: Excess/Refund Matching Backlog</h4>
+          <p>Over 3,600 excess/refund transactions with <strong>$110,283.81</strong> net outstanding, many unmatched for months.</p>
+          <div class="problem-impact">
+            <strong>Oct 2024 - June 2025:</strong> -$83,796.58 outstanding<br>
+            <strong>July 2025 - Current:</strong> -$14,574.86 outstanding<br>
+            <strong>Status:</strong> "Research is WIP" - effort in progress with LendingPoint
+          </div>
+        </div>
+
+        <div class="problem-card">
+          <h4>⚠️ Issue #4: SCRA Adjustments Pending</h4>
+          <p>Servicemembers Civil Relief Act adjustments are accumulating without clear guidance on how to clear them.</p>
+          <div class="problem-impact">
+            <strong>Examples:</strong><br>
+            - SCRA ADJ-0106548647: $3,583.44 (Oct 2025)<br>
+            - SCRA ADJ-0106673829: $263.63 (Jan 2026)<br>
+            - SCRA ADJ-0106673815: $863.46 (Jan 2026)<br>
+            <strong>Question:</strong> Refund to borrower? Transfer to LP? Write off?
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Daily Friction Points -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon orange">⚡</div>
+        <div class="section-title">
+          <h2>Daily Friction Points</h2>
+          <p>Recurring issues in the daily workflow</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="info-grid">
+          <div class="info-card orange">
+            <h4>OOB Rounding ($0.09 threshold)</h4>
+            <p>LendingPoint's system sometimes calculates Principal + Interest ≠ Total Payment. Each discrepancy up to $0.09 is accepted; larger amounts require investigation.</p>
+            <p><strong>Frequency:</strong> Multiple per day<br><strong>Handling:</strong> Tracked in OOB section, monthly true-up</p>
+          </div>
+          <div class="info-card orange">
+            <h4>Wire Differences</h4>
+            <p>Wire amounts frequently differ from reported payment totals by a few cents. These accumulate and are trued up monthly.</p>
+            <p><strong>Typical Variance:</strong> Under $0.10/day<br><strong>Current Accumulated:</strong> ~$2.06</p>
+          </div>
+          <div class="info-card orange">
+            <h4>Manual Sheet Creation</h4>
+            <p>Each daily reconciliation requires manually copying the prior day's sheet, updating dates, and pasting transactions. Error-prone and time-consuming.</p>
+          </div>
+          <div class="info-card orange">
+            <h4>Interest Reconciliation Mismatches</h4>
+            <p>The 120-ChargeOff and 180-ChargeOff interest validations frequently fail, requiring manual investigation and adjustment.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Strategic Recommendations -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon green">🎯</div>
+        <div class="section-title">
+          <h2>Strategic Recommendations</h2>
+          <p>Proposed improvements to the reconciliation process</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="solution-card">
+          <h4>✅ Priority 1: Resolve Legacy Carry Over</h4>
+          <p>Dedicate resources to researching the $1.3M carry-over with LendingPoint. This requires loan-by-loan investigation of the August 2023 migration period. Consider engaging LP's technical team for data extraction from their legacy system.</p>
+        </div>
+
+        <div class="solution-card">
+          <h4>✅ Priority 2: Fix Cert Sheet Formulas</h4>
+          <p>Rebuild the broken formulas in the Cert sheet with proper references to current data ranges. Document the formula structure to prevent future breakage. Consider using named ranges instead of cell references.</p>
+        </div>
+
+        <div class="solution-card">
+          <h4>✅ Priority 3: Automate Excess Matching</h4>
+          <p>Implement automated matching of excess payments to refunds by LAI number. The current manual process is unsustainable with 3,600+ records. Could use Excel XLOOKUP/FILTER or migrate to a database solution.</p>
+        </div>
+
+        <div class="solution-card">
+          <h4>✅ Priority 4: Daily Sheet Automation</h4>
+          <p>Extend the VBA macro to automatically create daily reconciliation sheets with proper date/balance updates. Reduce manual steps and associated errors.</p>
+        </div>
+
+        <div class="solution-card">
+          <h4>✅ Priority 5: Establish SCRA Protocol</h4>
+          <p>Work with Compliance and LP to establish clear procedures for handling SCRA adjustments. Document the decision tree and implement consistent processing.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ==========================================
+       TAB: GLOSSARY
+  ========================================== -->
+  <div id="glossary" class="tab-panel">
+
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon blue">📖</div>
+        <div class="section-title">
+          <h2>Terms & Definitions</h2>
+          <p>Key terminology used in the reconciliation process</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <dl class="glossary-grid">
+          <div class="glossary-item">
+            <dt>ATE (Accounting Template Entry)</dt>
+            <dd>A formatted journal entry ready for posting to the general ledger. Generated by the Parse sheet.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>CCB (Coastal Community Bank)</dt>
+            <dd>The bank of record for LendingPoint loans. Holds the settlement accounts and general ledger.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>DPD (Days Past Due)</dt>
+            <dd>Number of days a loan payment is overdue. Used to classify delinquency severity.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>Excess Payment</dt>
+            <dd>When a borrower pays more than the amount due. Held in settlement until refunded.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>Horizon</dt>
+            <dd>CCB's core banking system (FIS Horizon/H360). Source of truth for bank transactions.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>LAI (Loan Account Identifier)</dt>
+            <dd>Unique loan number format: LAI-XXXXXXXX. Used to match transactions to loans.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>LP (LendingPoint)</dt>
+            <dd>The financial partner that originates and services loans. Sends daily data and wires to CCB.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>OOB (Out of Balance)</dt>
+            <dd>When Principal + Interest doesn't equal Total Payment due to rounding. Typically under $0.09.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>PA (Participation Agreement)</dt>
+            <dd>The contractual arrangement for loan participation. PA payments are one category of daily wires.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>PURCH (Purchase)</dt>
+            <dd>Loans that CCB has purchased outright (vs. participated). A separate payment category.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>SCRA (Servicemembers Civil Relief Act)</dt>
+            <dd>Federal law requiring interest rate caps for active military. Requires special adjustment handling.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>Settlement Account</dt>
+            <dd>Bank account (1600020521) where wires are received and payments are processed. Must balance daily.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>SFTP</dt>
+            <dd>Secure File Transfer Protocol. Method for receiving daily data files from LendingPoint.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>Subledger</dt>
+            <dd>A detailed subsidiary ledger tracking individual loans. 120Subledger and 180Subledger track charge-offs.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>True-Up</dt>
+            <dd>Monthly adjustment to settle accumulated small differences (OOB, wire differences) with LendingPoint.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>Wire Difference</dt>
+            <dd>Discrepancy between the wire amount received and the sum of reported payment details.</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- Transaction Code Reference -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon teal">🏷️</div>
+        <div class="section-title">
+          <h2>Transaction Code Reference</h2>
+          <p>Horizon system transaction codes</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="info-grid">
+          <div class="info-card">
+            <h4>Code 30 - Debit</h4>
+            <p>Outgoing payments, adjustments, excess payments. Money leaving the settlement account.</p>
+          </div>
+          <div class="info-card green">
+            <h4>Code 45 - Wire</h4>
+            <p>Incoming wire transfers from LendingPoint. The primary inflow source.</p>
+          </div>
+          <div class="info-card purple">
+            <h4>Code 60 - Credit</h4>
+            <p>Refunds, OOB adjustments, true-ups. Money entering the settlement account.</p>
+          </div>
+        </div>
+
+        <div class="info-grid" style="margin-top: 24px;">
+          <div class="info-card blue">
+            <h4>ATE Code 1010 - Credit</h4>
+            <p>Credit entry in ATE journal. Reduces the debit balance.</p>
+          </div>
+          <div class="info-card red">
+            <h4>ATE Code 6010 - Debit</h4>
+            <p>Debit entry in ATE journal. Increases the debit balance.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+</main>
+
+<!-- ============================================
+     JAVASCRIPT
+============================================ -->
+<script>
+  // Tab Navigation
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      // Remove active from all tabs and panels
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+      // Add active to clicked tab and corresponding panel
+      tab.classList.add('active');
+      const panelId = tab.dataset.tab;
+      document.getElementById(panelId).classList.add('active');
+
+      // Trigger animations for the new panel
+      triggerPanelAnimations(panelId);
+    });
+  });
+
+  // Anime.js Animations
+  function triggerPanelAnimations(panelId) {
+    switch(panelId) {
+      case 'overview':
+        animateOverview();
+        break;
+      case 'repayments':
+        animateRepayments();
+        break;
+      case 'purchase':
+        animatePurchase();
+        break;
+      case 'chargeoff':
+        animateChargeoff();
+        break;
+      case 'problems':
+        animateProblems();
+        break;
+    }
+  }
+
+  // Header Animation on Load
+  window.addEventListener('load', () => {
+    anime({
+      targets: '.header-title',
+      opacity: [0, 1],
+      translateY: [20, 0],
+      duration: 800,
+      easing: 'easeOutExpo'
+    });
+
+    anime({
+      targets: '.header-subtitle',
+      opacity: [0.85],
+      translateY: [20, 0],
+      duration: 800,
+      delay: 200,
+      easing: 'easeOutExpo'
+    });
+
+    // Initial panel animations
+    animateOverview();
+  });
+
+  function animateOverview() {
+    anime({
+      targets: '#overview .section-card',
+      opacity: [0, 1],
+      translateY: [30, 0],
+      duration: 600,
+      delay: anime.stagger(150),
+      easing: 'easeOutExpo'
+    });
+
+    anime({
+      targets: '#overview .info-card',
+      opacity: [0, 1],
+      translateX: [-20, 0],
+      duration: 500,
+      delay: anime.stagger(100, {start: 400}),
+      easing: 'easeOutExpo'
+    });
+
+    anime({
+      targets: '#overview .stat-card',
+      scale: [0.8, 1],
+      opacity: [0, 1],
+      duration: 500,
+      delay: anime.stagger(80, {start: 300}),
+      easing: 'easeOutBack'
+    });
+  }
+
+  function animateRepayments() {
+    // Animate flow diagram paths
+    anime({
+      targets: '.repayment-path',
+      strokeDashoffset: [anime.setDashoffset, 0],
+      duration: 1500,
+      delay: anime.stagger(200),
+      easing: 'easeInOutSine'
+    });
+
+    // Animate flow nodes
+    anime({
+      targets: '#repayment-flow-svg .flow-node',
+      opacity: [0, 1],
+      scale: [0.8, 1],
+      duration: 500,
+      delay: anime.stagger(100),
+      easing: 'easeOutBack'
+    });
+
+    // Animate wire equation boxes
+    anime({
+      targets: '.wire-box',
+      opacity: [0, 1],
+      translateY: [20, 0],
+      duration: 600,
+      delay: anime.stagger(150, {start: 500}),
+      easing: 'easeOutExpo'
+    });
+
+    anime({
+      targets: '.wire-operator',
+      opacity: [0, 1],
+      duration: 400,
+      delay: anime.stagger(150, {start: 700}),
+      easing: 'easeOutExpo'
+    });
+
+    // Animate timeline
+    anime({
+      targets: '.timeline-step',
+      opacity: [0, 1],
+      translateX: [-30, 0],
+      duration: 500,
+      delay: anime.stagger(100, {start: 800}),
+      easing: 'easeOutExpo'
+    });
+  }
+
+  function animatePurchase() {
+    // Animate purchase flow paths
+    anime({
+      targets: '.purchase-path',
+      strokeDashoffset: [anime.setDashoffset, 0],
+      duration: 1200,
+      delay: anime.stagger(100),
+      easing: 'easeInOutSine'
+    });
+
+    anime({
+      targets: '#purchase-flow-svg .flow-node',
+      opacity: [0, 1],
+      scale: [0.8, 1],
+      duration: 500,
+      delay: anime.stagger(80),
+      easing: 'easeOutBack'
+    });
+  }
+
+  function animateChargeoff() {
+    // Animate journey stages
+    anime({
+      targets: '.journey-stage',
+      opacity: [0, 1],
+      translateY: [20, 0],
+      duration: 500,
+      delay: anime.stagger(100),
+      easing: 'easeOutExpo'
+    });
+
+    // Animate journey progress line
+    anime({
+      targets: '.journey-progress',
+      width: ['0%', '0%'],
+      duration: 1500,
+      easing: 'easeInOutQuad'
+    });
+  }
+
+  function animateProblems() {
+    anime({
+      targets: '.problem-card, .solution-card',
+      opacity: [0, 1],
+      translateY: [20, 0],
+      duration: 500,
+      delay: anime.stagger(100),
+      easing: 'easeOutExpo'
+    });
+  }
+
+  // Journey Stage Interaction
+  document.querySelectorAll('.journey-stage').forEach(stage => {
+    stage.addEventListener('click', () => {
+      const stageId = stage.dataset.stage;
+      const stages = ['active', 'delinquent', 'dpd120', 'lpchargeoff', 'resolution'];
+      const stageIndex = stages.indexOf(stageId);
+
+      // Update active states
+      document.querySelectorAll('.journey-stage').forEach((s, i) => {
+        s.classList.toggle('active', i <= stageIndex);
+      });
+
+      // Update progress bar
+      const progressPercent = (stageIndex / (stages.length - 1)) * 100;
+      anime({
+        targets: '.journey-progress',
+        width: progressPercent + '%',
+        duration: 500,
+        easing: 'easeInOutQuad'
+      });
+
+      // Show corresponding detail panel
+      document.querySelectorAll('.stage-detail-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('detail-' + stageId).classList.add('active');
+    });
+  });
+
+  // Timeline Step Expansion
+  document.querySelectorAll('.timeline-content').forEach(content => {
+    content.addEventListener('click', () => {
+      const step = content.closest('.timeline-step');
+      step.classList.toggle('expanded');
+
+      // Animate details
+      const details = step.querySelector('.timeline-details');
+      if (details && step.classList.contains('expanded')) {
+        anime({
+          targets: details,
+          opacity: [0, 1],
+          maxHeight: [0, details.scrollHeight],
+          duration: 300,
+          easing: 'easeOutExpo'
+        });
+      }
+    });
+  });
+
+  // Continuous data flow animation for repayments diagram
+  function animateDataFlow() {
+    // Create flowing dots along paths
+    const colors = ['#3b82f6', '#10b981', '#8b5cf6'];
+
+    setInterval(() => {
+      const svgNS = "http://www.w3.org/2000/svg";
+      const svg = document.getElementById('repayment-flow-svg');
+      if (!svg || !svg.closest('.tab-panel.active')) return;
+
+      const circle = document.createElementNS(svgNS, 'circle');
+      circle.setAttribute('r', '4');
+      circle.setAttribute('fill', colors[Math.floor(Math.random() * colors.length)]);
+      circle.setAttribute('cx', '140');
+      circle.setAttribute('cy', '175');
+      svg.appendChild(circle);
+
+      anime({
+        targets: circle,
+        cx: [140, 200, 400, 560, 760],
+        cy: [175, 175, 175, 175, 175],
+        opacity: [1, 1, 1, 1, 0],
+        duration: 3000,
+        easing: 'linear',
+        complete: () => circle.remove()
+      });
+    }, 2000);
+  }
+
+  // Start data flow animation
+  setTimeout(animateDataFlow, 1000);
+</script>
+
+</body>
+</html>
