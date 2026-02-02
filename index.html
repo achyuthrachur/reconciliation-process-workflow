@@ -235,6 +235,7 @@
     .info-popup p { font-size: 0.75rem; line-height: 1.5; opacity: 0.9; margin-bottom: 8px; }
     .info-popup p:last-child { margin-bottom: 0; }
     .info-popup .column-ref {
+      display: block;
       background: rgba(255,255,255,0.1);
       padding: 6px 10px;
       border-radius: 4px;
@@ -748,10 +749,10 @@
       <p class="intro-text">
         <strong>Reconciliation</strong> verifies that two sets of records match. For LendingPoint,
         <span class="info-term">CCB<span class="info-icon">ℹ</span>
-          <div class="info-popup">
+          <span class="info-popup">
             <h5>Coastal Community Bank (CCB)</h5>
             <p>The bank of record for LendingPoint loans. CCB holds the underlying loan accounts while LendingPoint originates and services them.</p>
-          </div>
+          </span>
         </span>
         acts as the <strong>bank of record</strong> for consumer and commercial loans. LendingPoint originates and services the loans, but CCB holds the underlying accounts. Every day, payments flow between borrowers, LendingPoint, and CCB. <strong>Reconciliation ensures every dollar is accounted for.</strong>
       </p>
@@ -759,36 +760,36 @@
         <h4>💡 The Core Question</h4>
         <p>At the end of each day, does the cash in our
           <span class="info-term">settlement account<span class="info-icon">ℹ</span>
-            <div class="info-popup">
+            <span class="info-popup">
               <h5>Settlement Account</h5>
               <p>Bank account 1600020521 where wire transfers are received and payments processed. This is the central clearing account for all LendingPoint transactions.</p>
-              <div class="column-ref">Account: <span>1600020521</span></div>
-            </div>
+              <span class="column-ref">Account: <span>1600020521</span></span>
+            </span>
           </span>
           match what the transactions say should be there? If not, why not, and how do we fix it?</p>
       </div>
       <div class="info-grid">
         <div class="info-card blue"><h4>📥 Money Coming In</h4><p>Wire transfers from LendingPoint containing borrower payments (
           <span class="info-term">Principal<span class="info-icon">ℹ</span>
-            <div class="info-popup">
+            <span class="info-popup">
               <h5>Principal Payment</h5>
               <p>The portion of a loan payment that reduces the outstanding loan balance.</p>
-              <div class="column-ref">Pymt_File Column G: <span>Principal</span></div>
-            </div>
+              <span class="column-ref">Pymt_File Column G: <span>Principal</span></span>
+            </span>
           </span>,
           <span class="info-term">Interest<span class="info-icon">ℹ</span>
-            <div class="info-popup">
+            <span class="info-popup">
               <h5>Interest Payment</h5>
               <p>The portion of a loan payment that covers the cost of borrowing.</p>
-              <div class="column-ref">Pymt_File Column H: <span>Interest</span></div>
-            </div>
+              <span class="column-ref">Pymt_File Column H: <span>Interest</span></span>
+            </span>
           </span>,
           <span class="info-term">Fees<span class="info-icon">ℹ</span>
-            <div class="info-popup">
+            <span class="info-popup">
               <h5>Fee Payment</h5>
               <p>Any additional fees charged on the loan (late fees, service fees, etc.).</p>
-              <div class="column-ref">Pymt_File Column I: <span>Fees</span></div>
-            </div>
+              <span class="column-ref">Pymt_File Column I: <span>Fees</span></span>
+            </span>
           </span>)</p></div>
         <div class="info-card green"><h4>📤 Money Going Out</h4><p>Loan payments applied to accounts, refunds to borrowers, fees to service providers</p></div>
         <div class="info-card orange"><h4>⚖️ The Balance</h4><p>After matching all ins and outs, the settlement account should balance to zero (or a known outstanding amount)</p></div>
@@ -811,7 +812,7 @@
           <h4>📈 Purchase Parse (Macro Workbook)</h4>
           <p>Processes loan-level payment data, generates
             <span class="info-term">ATE<span class="info-icon">ℹ</span>
-              <div class="info-popup">
+              <span class="info-popup">
                 <h5>Accounting Template Entry (ATE)</h5>
                 <p>A formatted journal entry ready for posting to the General Ledger. Contains account numbers, amounts, and transaction codes.</p>
               </span>
@@ -841,25 +842,25 @@
           <h4>🔢 Transaction Prefixes</h4>
           <p>
             <span class="info-term">LPT-<span class="info-icon">ℹ</span>
-              <div class="info-popup">
+              <span class="info-popup">
                 <h5>Loan Payment Transaction</h5>
                 <p>Regular payments from borrowers. The most common transaction type.</p>
-                <div class="column-ref">Pymt_File Column A: <span>Txn_ID</span></div>
-              </div>
+                <span class="column-ref">Pymt_File Column A: <span>Txn_ID</span></span>
+              </span>
             </span>: Loan Payment Transaction<br>
             <span class="info-term">RTA-<span class="info-icon">ℹ</span>
-              <div class="info-popup">
+              <span class="info-popup">
                 <h5>Return Transaction</h5>
                 <p>Payment reversals/returns when a payment bounces or fails (e.g., NSF check).</p>
-                <div class="column-ref">Pymt_File Column A: <span>Txn_ID</span></div>
-              </div>
+                <span class="column-ref">Pymt_File Column A: <span>Txn_ID</span></span>
+              </span>
             </span>: Return Transaction<br>
             <span class="info-term">ADJ-<span class="info-icon">ℹ</span>
-              <div class="info-popup">
+              <span class="info-popup">
                 <h5>Adjustment Transaction</h5>
                 <p>Corrections, refunds, spread corrections, and other manual adjustments.</p>
-                <div class="column-ref">Pymt_File Column A: <span>Txn_ID</span></div>
-              </div>
+                <span class="column-ref">Pymt_File Column A: <span>Txn_ID</span></span>
+              </span>
             </span>: Adjustment
           </p>
         </div>
@@ -868,18 +869,18 @@
           <p>
             <strong>Consumer:</strong>
             <span class="info-term">DTC<span class="info-icon">ℹ</span>
-              <div class="info-popup">
+              <span class="info-popup">
                 <h5>Direct-to-Consumer (DTC)</h5>
                 <p>Personal loans originated directly to individual borrowers through LendingPoint's platform.</p>
-                <div class="column-ref">Pymt_File Column N: <span>Loan_Product_Type</span></div>
-              </div>
+                <span class="column-ref">Pymt_File Column N: <span>Loan_Product_Type</span></span>
+              </span>
             </span> +
             <span class="info-term">POS<span class="info-icon">ℹ</span>
-              <div class="info-popup">
+              <span class="info-popup">
                 <h5>Point of Sale (POS)</h5>
                 <p>Consumer loans originated at retail point of sale for purchases.</p>
-                <div class="column-ref">Pymt_File Column N: <span>Loan_Product_Type</span></div>
-              </div>
+                <span class="column-ref">Pymt_File Column N: <span>Loan_Product_Type</span></span>
+              </span>
             </span><br>
             <strong>Commercial:</strong> eBay + JOOR
           </p>
@@ -888,18 +889,18 @@
           <h4>⏱️ Days Past Due (DPD) Thresholds</h4>
           <p>
             <span class="info-term">120 DPD<span class="info-icon">ℹ</span>
-              <div class="info-popup">
+              <span class="info-popup">
                 <h5>120+ Days Past Due</h5>
                 <p>CCB internal charge-off threshold. Loans enter the 120Subledger for tracking.</p>
-                <div class="column-ref">Day_Tape Column K: <span>Days_Past_Due</span></div>
-              </div>
+                <span class="column-ref">Day_Tape Column K: <span>Days_Past_Due</span></span>
+              </span>
             </span>: CCB internal charge-off<br>
             <span class="info-term">180 DPD<span class="info-icon">ℹ</span>
-              <div class="info-popup">
+              <span class="info-popup">
                 <h5>180+ Days Past Due</h5>
                 <p>LendingPoint official charge-off. The Charge_Off_Date field gets populated.</p>
-                <div class="column-ref">Day_Tape Column T: <span>Charge_Off_Date</span></div>
-              </div>
+                <span class="column-ref">Day_Tape Column T: <span>Charge_Off_Date</span></span>
+              </span>
             </span>: LendingPoint official charge-off
           </p>
         </div>
@@ -907,22 +908,22 @@
           <h4>💰 Excess Payments</h4>
           <p>When a borrower pays more than the amount due. These
             <span class="info-term">overpayments<span class="info-icon">ℹ</span>
-              <div class="info-popup">
+              <span class="info-popup">
                 <h5>Excess Payment Amount</h5>
                 <p>The amount by which a payment exceeds what was owed. Held in settlement until refunded to borrower.</p>
-                <div class="column-ref">Pymt_File Column J: <span>Excess</span></div>
-              </div>
+                <span class="column-ref">Pymt_File Column J: <span>Excess</span></span>
+              </span>
             </span> are held in the settlement account until refunded.</p>
         </div>
         <div class="info-card red">
           <h4>📏 Out of Balance (OOB)</h4>
           <p>
             <span class="info-term">Penny rounding<span class="info-icon">ℹ</span>
-              <div class="info-popup">
+              <span class="info-popup">
                 <h5>Out of Balance (OOB)</h5>
                 <p>Small discrepancy where Principal + Interest ≠ Total Transaction Amount due to rounding. Typically ±$0.01 per transaction. Maximum $0.09/payment.</p>
-                <div class="column-ref">Pymt_File Column AA: <span>OOB</span></div>
-              </div>
+                <span class="column-ref">Pymt_File Column AA: <span>OOB</span></span>
+              </span>
             </span> where Principal + Interest ≠ Total. Maximum $0.09/payment. Auto-adjusted via the OOB_Filter worksheet.
           </p>
         </div>
@@ -1008,11 +1009,11 @@
         <div class="info-card green"><h4>✓ Perfect Match</h4><p>Wire + Payment = $0.00 - transactions clear immediately.</p></div>
         <div class="info-card orange"><h4>~ Rounding (OOB)</h4><p>Small differences from
           <span class="info-term">Out of Balance<span class="info-icon">ℹ</span>
-            <div class="info-popup">
+            <span class="info-popup">
               <h5>Out of Balance (OOB)</h5>
               <p>Penny discrepancies that accumulate. Tracked in OOB_Filter worksheet and auto-adjusted via Parse sheet row 25.</p>
-              <div class="column-ref">Pymt_File Column AA: <span>OOB</span></div>
-            </div>
+              <span class="column-ref">Pymt_File Column AA: <span>OOB</span></span>
+            </span>
           </span> penny allocations. Accumulated for monthly true-up.</p></div>
         <div class="info-card red"><h4>✗ Large Variance</h4><p>Significant differences require investigation. Check Parse!N16 and Parse!O16 for variance details.</p></div>
       </div>
@@ -1207,7 +1208,7 @@
             <div class="timeline-details">
               <ul class="detail-list">
                 <li>Delta Parse: Day2 (Canceled) not in Day1 (Canceled)</li>
-                <li>Filter by: <span class="info-term">Loan_Status<span class="info-icon">ℹ</span><div class="info-popup"><h5>Loan Status Field</h5><p>Current status of the loan. "Canceled" indicates the loan was voided/rescinded.</p><div class="column-ref">Day_Tape Column L: <span>Loan_Status</span></div></div></span> = "Canceled"</li>
+                <li>Filter by: <span class="info-term">Loan_Status<span class="info-icon">ℹ</span><span class="info-popup"><h5>Loan Status Field</h5><p>Current status of the loan. "Canceled" indicates the loan was voided/rescinded.</p><span class="column-ref">Day_Tape Column L: <span>Loan_Status</span></span></span></span> = "Canceled"</li>
                 <li>DEBIT LendingPoint Operating Account 1600018566</li>
                 <li>CREDIT Principal GL and Accrued Interest GL</li>
               </ul>
@@ -1223,7 +1224,7 @@
               <ul class="detail-list">
                 <li>Daily_5: PURCHASED portfolio</li>
                 <li>Daily_6: PROGRAM portfolio</li>
-                <li>Filter: <span class="info-term">Days_Past_Due<span class="info-icon">ℹ</span><div class="info-popup"><h5>Days Past Due (DPD)</h5><p>Number of days since payment was due. 120+ triggers CCB internal charge-off.</p><div class="column-ref">Day_Tape Column K: <span>Days_Past_Due</span></div></div></span> > 119 AND Charge_Off_Date is blank</li>
+                <li>Filter: <span class="info-term">Days_Past_Due<span class="info-icon">ℹ</span><span class="info-popup"><h5>Days Past Due (DPD)</h5><p>Number of days since payment was due. 120+ triggers CCB internal charge-off.</p><span class="column-ref">Day_Tape Column K: <span>Days_Past_Due</span></span></span></span> > 119 AND Charge_Off_Date is blank</li>
                 <li>DEBIT Reserve for Loan Loss GL 10290000</li>
                 <li>CREDIT Principal Contra GL Accounts</li>
               </ul>
@@ -1239,7 +1240,7 @@
               <ul class="detail-list">
                 <li>Daily_7: PURCHASED Consumer & Commercial</li>
                 <li>Daily_8: PROGRAM Consumer & Commercial</li>
-                <li>Filter: <span class="info-term">Charge_Off_Date<span class="info-icon">ℹ</span><div class="info-popup"><h5>Charge-Off Date</h5><p>Date when LendingPoint officially charged off the loan (typically at 180 DPD).</p><div class="column-ref">Day_Tape Column T: <span>Charge_Off_Date</span></div></div></span> is not blank</li>
+                <li>Filter: <span class="info-term">Charge_Off_Date<span class="info-icon">ℹ</span><span class="info-popup"><h5>Charge-Off Date</h5><p>Date when LendingPoint officially charged off the loan (typically at 180 DPD).</p><span class="column-ref">Day_Tape Column T: <span>Charge_Off_Date</span></span></span></span> is not blank</li>
                 <li>DEBIT LendingPoint Cash Collateral 1600076143</li>
                 <li>CREDIT Account Receivable GL 10807100</li>
               </ul>
@@ -1292,9 +1293,9 @@
         <div class="info-card green">
           <h4>LPT- (Loan Payment Transaction)</h4>
           <p>Regular payments:
-            <span class="info-term">Principal<span class="info-icon">ℹ</span><div class="info-popup"><h5>Principal (Column G)</h5><p>The portion of payment that reduces the loan balance.</p></div></span> +
-            <span class="info-term">Interest<span class="info-icon">ℹ</span><div class="info-popup"><h5>Interest (Column H)</h5><p>The portion of payment for borrowing costs.</p></div></span> +
-            <span class="info-term">Fees<span class="info-icon">ℹ</span><div class="info-popup"><h5>Fees (Column I)</h5><p>Any additional charges (late fees, etc.).</p></div></span>
+            <span class="info-term">Principal<span class="info-icon">ℹ</span><span class="info-popup"><h5>Principal (Column G)</h5><p>The portion of payment that reduces the loan balance.</p></span></span> +
+            <span class="info-term">Interest<span class="info-icon">ℹ</span><span class="info-popup"><h5>Interest (Column H)</h5><p>The portion of payment for borrowing costs.</p></span></span> +
+            <span class="info-term">Fees<span class="info-icon">ℹ</span><span class="info-popup"><h5>Fees (Column I)</h5><p>Any additional charges (late fees, etc.).</p></span></span>
           </p>
           <div class="formula-box">LPT-0123456789 = $500.00</div>
         </div>
@@ -1434,11 +1435,11 @@
 
       <div class="stage-detail-panel active" id="detail-active">
         <h4>Active Loan Status</h4>
-        <p>Loan is current - borrower making payments as scheduled. <span class="info-term">Loan_Status<span class="info-icon">ℹ</span><div class="info-popup"><h5>Loan Status (Column L)</h5><p>Active status in Day_Tape indicates the loan is performing normally.</p></div></span> shows "Active" or "Current".</p>
+        <p>Loan is current - borrower making payments as scheduled. <span class="info-term">Loan_Status<span class="info-icon">ℹ</span><span class="info-popup"><h5>Loan Status (Column L)</h5><p>Active status in Day_Tape indicates the loan is performing normally.</p></span></span> shows "Active" or "Current".</p>
       </div>
       <div class="stage-detail-panel" id="detail-delinquent">
         <h4>Early Delinquency (30-89 Days Past Due)</h4>
-        <p>Missed payments but not severely delinquent. Collections efforts begin. <span class="info-term">Days_Past_Due<span class="info-icon">ℹ</span><div class="info-popup"><h5>Days Past Due (Column K)</h5><p>The number of days since payment was due. Increases daily until payment received.</p></div></span> is between 30-89.</p>
+        <p>Missed payments but not severely delinquent. Collections efforts begin. <span class="info-term">Days_Past_Due<span class="info-icon">ℹ</span><span class="info-popup"><h5>Days Past Due (Column K)</h5><p>The number of days since payment was due. Increases daily until payment received.</p></span></span> is between 30-89.</p>
       </div>
       <div class="stage-detail-panel" id="detail-dpd120">
         <h4>120+ Days Past Due - CCB Internal Recognition</h4>
@@ -1454,7 +1455,7 @@
       </div>
       <div class="stage-detail-panel" id="detail-lpchargeoff">
         <h4>LendingPoint Charge-Off (180 Days Past Due)</h4>
-        <p>LendingPoint formally charges off the loan. The <span class="info-term">Charge_Off_Date<span class="info-icon">ℹ</span><div class="info-popup"><h5>Charge-Off Date (Column T)</h5><p>The date LendingPoint officially charged off the loan. Populated at ~180 DPD.</p></div></span> field gets populated. Loan moves to 180-ChargeOff and 180Subledger.</p>
+        <p>LendingPoint formally charges off the loan. The <span class="info-term">Charge_Off_Date<span class="info-icon">ℹ</span><span class="info-popup"><h5>Charge-Off Date (Column T)</h5><p>The date LendingPoint officially charged off the loan. Populated at ~180 DPD.</p></span></span> field gets populated. Loan moves to 180-ChargeOff and 180Subledger.</p>
       </div>
       <div class="stage-detail-panel" id="detail-resolution">
         <h4>Final Resolution</h4>
@@ -1481,7 +1482,7 @@
         </div>
         <div class="info-card green">
           <h4>#2 Balance Changes</h4>
-          <p>Changes in <span class="info-term">Outstanding_Principal<span class="info-icon">ℹ</span><div class="info-popup"><h5>Outstanding Principal (Column M)</h5><p>Current loan principal balance in Day_Tape.</p></div></span> / <span class="info-term">Accrued_Interest<span class="info-icon">ℹ</span><div class="info-popup"><h5>Accrued Interest (Column N)</h5><p>Unpaid interest that has accumulated on the loan.</p></div></span> on existing loans</p>
+          <p>Changes in <span class="info-term">Outstanding_Principal<span class="info-icon">ℹ</span><span class="info-popup"><h5>Outstanding Principal (Column M)</h5><p>Current loan principal balance in Day_Tape.</p></span></span> / <span class="info-term">Accrued_Interest<span class="info-icon">ℹ</span><span class="info-popup"><h5>Accrued Interest (Column N)</h5><p>Unpaid interest that has accumulated on the loan.</p></span></span> on existing loans</p>
         </div>
         <div class="info-card orange">
           <h4>#3 Charged Off by LP</h4>
@@ -1520,7 +1521,7 @@
           <h4>Excess Payment Tracking</h4>
           <p>3,639 records | 465 unique loans | -$110,283 net outstanding</p>
           <p style="font-size: 0.75rem; margin-top: 8px;">
-            Excess payments from <span class="info-term">Excess<span class="info-icon">ℹ</span><div class="info-popup"><h5>Excess Column (J)</h5><p>Amount by which payment exceeds loan balance. Tracked in Excess_Filter worksheet.</p></div></span> column (J) in Pymt_File
+            Excess payments from <span class="info-term">Excess<span class="info-icon">ℹ</span><span class="info-popup"><h5>Excess Column (J)</h5><p>Amount by which payment exceeds loan balance. Tracked in Excess_Filter worksheet.</p></span></span> column (J) in Pymt_File
           </p>
         </div>
         <div class="info-card blue">
@@ -1533,7 +1534,7 @@
           <p>Bank Balance + Reconciling Items = $0.00</p>
           <div class="formula-explained">
             <div class="formula-code">Bank_Balance + Sum_of_Reconciling_Items = Final_Balance</div>
-            <div class="formula-breakdown">Final_Balance MUST equal <span class="field">$0.00</span></div>
+            <div class="formula-breakdown">Final_Balance MUST equal <span class="field">$0.00</span></span>
           </div>
         </div>
       </div>
