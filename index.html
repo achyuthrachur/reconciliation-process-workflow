@@ -163,48 +163,68 @@
     .info-term {
       position: relative;
       display: inline-block;
-      cursor: help;
+      cursor: pointer;
       border-bottom: 1px dotted var(--ccb-blue);
       color: var(--ccb-blue);
       font-weight: 500;
       vertical-align: baseline;
+      -webkit-tap-highlight-color: transparent;
     }
     .info-term .info-icon {
       font-size: 0.6rem;
       opacity: 0.6;
       vertical-align: super;
       margin-left: 1px;
+      transition: opacity 0.2s;
+    }
+    .info-term:hover .info-icon,
+    .info-term.active .info-icon {
+      opacity: 1;
     }
     .info-popup {
       display: none;
-      position: absolute;
-      bottom: 100%;
-      left: 0;
-      margin-bottom: 8px;
+      position: fixed;
       background: var(--bg-dark);
       color: white;
       padding: 14px 16px;
       border-radius: var(--radius);
       font-size: 0.8rem;
-      width: 280px;
-      max-width: 90vw;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-      z-index: 9999;
+      width: 300px;
+      max-width: calc(100vw - 32px);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.1);
+      z-index: 10000;
       text-align: left;
       font-weight: normal;
       line-height: 1.5;
       white-space: normal;
+      pointer-events: auto;
+      animation: popupFadeIn 0.2s ease-out;
     }
-    .info-popup::after {
+    @keyframes popupFadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .info-popup.show {
+      display: block;
+    }
+    .info-popup::before {
       content: '';
       position: absolute;
+      border: 8px solid transparent;
+    }
+    .info-popup.arrow-bottom::before {
       top: 100%;
       left: 20px;
-      border: 8px solid transparent;
       border-top-color: var(--bg-dark);
     }
-    .info-term:hover .info-popup {
-      display: block;
+    .info-popup.arrow-top::before {
+      bottom: 100%;
+      left: 20px;
+      border-bottom-color: var(--bg-dark);
+    }
+    .info-popup.arrow-right::before {
+      left: auto;
+      right: 20px;
     }
     .info-popup h5 {
       font-size: 0.85rem;
@@ -213,6 +233,7 @@
       font-weight: 600;
     }
     .info-popup p { font-size: 0.75rem; line-height: 1.5; opacity: 0.9; margin-bottom: 8px; }
+    .info-popup p:last-child { margin-bottom: 0; }
     .info-popup .column-ref {
       background: rgba(255,255,255,0.1);
       padding: 6px 10px;
@@ -222,10 +243,40 @@
       margin-top: 6px;
     }
     .info-popup .column-ref span { color: var(--warning); }
+    .info-popup .close-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 20px;
+      height: 20px;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 12px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.7;
+      transition: opacity 0.2s, background 0.2s;
+    }
+    .info-popup .close-btn:hover {
+      opacity: 1;
+      background: rgba(255,255,255,0.2);
+    }
 
     /* Ensure parent containers don't clip popups */
     .intro-text, .key-concept, .info-card, .section-body, .timeline-content, p {
       overflow: visible !important;
+    }
+
+    /* Desktop hover behavior - only for non-touch devices */
+    @media (hover: hover) and (pointer: fine) {
+      .info-term:hover .info-popup.hover-enabled {
+        display: block;
+      }
     }
 
     /* Expandable Info Card */
@@ -2293,6 +2344,159 @@
   // Run initial animations
   initAnimations();
   initInteractions();
+
+  // ============================================
+  // INFO POPUP HANDLING - Click/Touch Support
+  // ============================================
+  (function() {
+    let activePopup = null;
+    let activeInfoTerm = null;
+
+    function positionPopup(popup, infoTerm) {
+      const termRect = infoTerm.getBoundingClientRect();
+      const popupWidth = 300;
+      const popupHeight = popup.offsetHeight || 150;
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const padding = 16;
+
+      // Calculate horizontal position - try to center on the term
+      let left = termRect.left + (termRect.width / 2) - (popupWidth / 2);
+
+      // Adjust if going off left edge
+      if (left < padding) {
+        left = padding;
+        popup.classList.add('arrow-right');
+        popup.classList.remove('arrow-bottom', 'arrow-top');
+      }
+      // Adjust if going off right edge
+      else if (left + popupWidth > viewportWidth - padding) {
+        left = viewportWidth - popupWidth - padding;
+        popup.classList.add('arrow-right');
+      } else {
+        popup.classList.remove('arrow-right');
+      }
+
+      // Calculate vertical position - prefer above, fall back to below
+      let top;
+      const spaceAbove = termRect.top;
+      const spaceBelow = viewportHeight - termRect.bottom;
+
+      if (spaceAbove >= popupHeight + padding + 10) {
+        // Position above
+        top = termRect.top - popupHeight - 10;
+        popup.classList.add('arrow-bottom');
+        popup.classList.remove('arrow-top');
+      } else if (spaceBelow >= popupHeight + padding + 10) {
+        // Position below
+        top = termRect.bottom + 10;
+        popup.classList.add('arrow-top');
+        popup.classList.remove('arrow-bottom');
+      } else {
+        // Center vertically if neither works well
+        top = Math.max(padding, (viewportHeight - popupHeight) / 2);
+        popup.classList.remove('arrow-bottom', 'arrow-top');
+      }
+
+      popup.style.left = left + 'px';
+      popup.style.top = top + 'px';
+      popup.style.width = popupWidth + 'px';
+    }
+
+    function showPopup(infoTerm) {
+      // Close any existing popup first
+      hideAllPopups();
+
+      const popup = infoTerm.querySelector('.info-popup');
+      if (!popup) return;
+
+      // Add close button if not already present
+      if (!popup.querySelector('.close-btn')) {
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'close-btn';
+        closeBtn.innerHTML = '×';
+        closeBtn.setAttribute('aria-label', 'Close');
+        closeBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          hideAllPopups();
+        });
+        popup.insertBefore(closeBtn, popup.firstChild);
+      }
+
+      popup.classList.add('show');
+      infoTerm.classList.add('active');
+      activePopup = popup;
+      activeInfoTerm = infoTerm;
+
+      // Position after showing (so we can measure height)
+      requestAnimationFrame(() => {
+        positionPopup(popup, infoTerm);
+      });
+    }
+
+    function hideAllPopups() {
+      document.querySelectorAll('.info-popup.show').forEach(p => {
+        p.classList.remove('show');
+      });
+      document.querySelectorAll('.info-term.active').forEach(t => {
+        t.classList.remove('active');
+      });
+      activePopup = null;
+      activeInfoTerm = null;
+    }
+
+    // Click/touch handler for info terms
+    document.querySelectorAll('.info-term').forEach(function(infoTerm) {
+      infoTerm.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (infoTerm.classList.contains('active')) {
+          hideAllPopups();
+        } else {
+          showPopup(infoTerm);
+        }
+      });
+
+      // Prevent popup from closing when clicking inside it
+      const popup = infoTerm.querySelector('.info-popup');
+      if (popup) {
+        popup.addEventListener('click', function(e) {
+          e.stopPropagation();
+        });
+      }
+    });
+
+    // Close popup when clicking outside
+    document.addEventListener('click', function(e) {
+      if (activePopup && !e.target.closest('.info-term')) {
+        hideAllPopups();
+      }
+    });
+
+    // Close popup on escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && activePopup) {
+        hideAllPopups();
+      }
+    });
+
+    // Reposition popup on scroll/resize
+    let repositionTimeout;
+    function handleReposition() {
+      clearTimeout(repositionTimeout);
+      repositionTimeout = setTimeout(function() {
+        if (activePopup && activeInfoTerm) {
+          positionPopup(activePopup, activeInfoTerm);
+        }
+      }, 10);
+    }
+
+    window.addEventListener('scroll', handleReposition, true);
+    window.addEventListener('resize', handleReposition);
+
+    console.log('Info popup system initialized');
+  })();
 </script>
 
 </body>
