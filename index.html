@@ -2404,11 +2404,12 @@
     }
 
     function showPopup(infoTerm) {
+      console.log('showPopup called for:', infoTerm.textContent.trim().substring(0, 20));
       hideAllPopups();
 
       const popup = infoTerm.querySelector('.info-popup');
+      console.log('Found popup:', popup ? 'yes' : 'no');
       if (!popup) {
-        console.log('No popup found for', infoTerm.textContent);
         return;
       }
 
@@ -2424,12 +2425,16 @@
         popup.insertBefore(closeBtn, popup.firstChild);
       }
 
+      // Show the popup
       popup.classList.add('show');
+      popup.style.display = 'block';
       infoTerm.classList.add('active');
       activePopup = popup;
       activeInfoTerm = infoTerm;
 
+      console.log('Popup classes:', popup.className);
       positionPopup(popup, infoTerm);
+      console.log('Popup positioned at:', popup.style.top, popup.style.left);
     }
 
     function hideAllPopups() {
@@ -2450,12 +2455,15 @@
 
     infoTerms.forEach(function(infoTerm, index) {
       infoTerm.addEventListener('click', function(e) {
+        console.log('Click on info-term #' + index);
         e.preventDefault();
         e.stopPropagation();
 
         if (infoTerm.classList.contains('active')) {
+          console.log('Already active, hiding');
           hideAllPopups();
         } else {
+          console.log('Showing popup');
           showPopup(infoTerm);
         }
       });
