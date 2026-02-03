@@ -315,6 +315,16 @@
     }
     .expandable-info-header .expand-icon {
       transition: transform 0.3s;
+      font-size: 0.75rem;
+      color: var(--ccb-blue);
+    }
+    .expandable-info-header .expand-icon::before {
+      content: 'Click to expand ';
+      font-size: 0.7rem;
+      opacity: 0.7;
+    }
+    .expandable-info.expanded .expand-icon::before {
+      content: 'Click to collapse ';
     }
     .expandable-info.expanded .expand-icon {
       transform: rotate(180deg);
@@ -522,6 +532,17 @@
       border: 1px solid var(--border);
       cursor: pointer;
       transition: all 0.3s;
+    }
+    .timeline-step:has(.timeline-details) .timeline-content::after {
+      content: '▼ Click to expand';
+      display: block;
+      font-size: 0.7rem;
+      color: var(--ccb-blue);
+      margin-top: 8px;
+      opacity: 0.7;
+    }
+    .timeline-step.expanded:has(.timeline-details) .timeline-content::after {
+      content: '▲ Click to collapse';
     }
     .timeline-content:hover { box-shadow: var(--shadow); transform: translateX(4px); }
     .timeline-content h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; }
@@ -834,7 +855,7 @@
   <section class="section-card">
     <div class="section-header">
       <div class="section-icon teal">💡</div>
-      <div class="section-title"><h2>Key Concepts</h2><p>Essential terminology (click to expand)</p></div>
+      <div class="section-title"><h2>Key Concepts</h2><p>Essential terminology and definitions</p></div>
     </div>
     <div class="section-body">
       <div class="info-grid">
