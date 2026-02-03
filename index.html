@@ -321,11 +321,6 @@
     .expandable-info.expanded .expand-icon {
       transform: rotate(180deg);
     }
-    .expandable-info-header .expand-text {
-      font-size: 0.7rem;
-      opacity: 0.7;
-      margin-right: 4px;
-    }
     .expandable-info-content {
       max-height: 0;
       overflow: hidden;
@@ -529,19 +524,6 @@
       border: 1px solid var(--border);
       cursor: pointer;
       transition: all 0.3s;
-    }
-    .timeline-step .expand-hint {
-      display: block;
-      font-size: 0.7rem;
-      color: var(--ccb-blue);
-      margin-top: 8px;
-      opacity: 0.7;
-    }
-    .timeline-step.expanded .expand-hint::before {
-      content: '▲ ';
-    }
-    .timeline-step:not(.expanded) .expand-hint::before {
-      content: '▼ ';
     }
     .timeline-content:hover { box-shadow: var(--shadow); transform: translateX(4px); }
     .timeline-content h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; }
@@ -986,7 +968,7 @@
 
       <div class="expandable-info" id="flow-detail-borrowers">
         <div class="expandable-info-header">
-          <h4>📄 Data Flow Details (Click to expand)</h4>
+          <h4>📄 Data Flow Details</h4>
           <span class="expand-icon">▼</span>
         </div>
         <div class="expandable-info-content">
@@ -2376,73 +2358,24 @@
       });
     });
 
-    // Timeline expansion with animation
-    document.querySelectorAll('.timeline-step').forEach(step => {
-      const details = step.querySelector('.timeline-details');
-      const content = step.querySelector('.timeline-content');
-      if (!details || !content) return;
-
-      // Add expand hint dynamically
-      const hint = document.createElement('span');
-      hint.className = 'expand-hint';
-      hint.textContent = 'Click to expand';
-      content.appendChild(hint);
-
-      content.addEventListener('click', function(e) {
-        e.stopPropagation();
-        const wasExpanded = step.classList.contains('expanded');
-        step.classList.toggle('expanded');
-        hint.textContent = wasExpanded ? 'Click to expand' : 'Click to collapse';
-
-        if (!wasExpanded && typeof anime !== 'undefined') {
-          anime({
-            targets: details,
-            opacity: [0, 1],
-            translateY: [-10, 0],
-            duration: 300,
-            easing: 'easeOutExpo'
-          });
+    // Timeline expansion - simple toggle
+    document.querySelectorAll('.timeline-content').forEach(function(content) {
+      content.onclick = function() {
+        var step = this.closest('.timeline-step');
+        if (step) {
+          step.classList.toggle('expanded');
         }
-      });
+      };
     });
 
-    // Expandable info cards
-    document.querySelectorAll('.expandable-info-header').forEach(header => {
-      const card = header.closest('.expandable-info');
-      if (!card) return;
-
-      // Add expand text before the icon
-      const icon = header.querySelector('.expand-icon');
-      if (icon) {
-        const expandText = document.createElement('span');
-        expandText.className = 'expand-text';
-        expandText.textContent = 'Click to expand';
-        icon.parentNode.insertBefore(expandText, icon);
-      }
-
-      header.addEventListener('click', function(e) {
-        e.stopPropagation();
-        const wasExpanded = card.classList.contains('expanded');
-        card.classList.toggle('expanded');
-
-        // Update text
-        const expandText = header.querySelector('.expand-text');
-        if (expandText) {
-          expandText.textContent = wasExpanded ? 'Click to expand' : 'Click to collapse';
+    // Expandable info cards - simple toggle
+    document.querySelectorAll('.expandable-info-header').forEach(function(header) {
+      header.onclick = function() {
+        var card = this.closest('.expandable-info');
+        if (card) {
+          card.classList.toggle('expanded');
         }
-
-        if (!wasExpanded && typeof anime !== 'undefined') {
-          const content = card.querySelector('.expandable-info-body');
-          if (content) {
-            anime({
-              targets: content,
-              opacity: [0, 1],
-              duration: 300,
-              easing: 'easeOutExpo'
-            });
-          }
-        }
-      });
+      };
     });
 
     // Journey stage interaction with enhanced animation
