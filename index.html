@@ -1812,6 +1812,182 @@
     </div>
   </section>
 
+  <!-- Issue #5: Charge-Off Interest Reconciliation Discrepancy -->
+  <section class="section-card">
+    <div class="section-header">
+      <div class="section-icon orange">⚠️</div>
+      <div class="section-title"><h2>Issue #5: Charge-Off Interest Reconciliation Discrepancy</h2><p>Medium Priority - Affects validation checks #9 and #13</p></div>
+    </div>
+    <div class="section-body">
+      <div class="info-grid">
+        <div class="info-card red">
+          <h4>Failing Check #9</h4>
+          <p style="font-size: 0.9rem; font-weight: 600;">120-ChargeOff Interest Match</p>
+          <p style="font-size: 0.75rem; color: var(--text-light);">Location: 120-CO!AE2</p>
+        </div>
+        <div class="info-card red">
+          <h4>Failing Check #13</h4>
+          <p style="font-size: 0.9rem; font-weight: 600;">180-ChargeOff Interest Match</p>
+          <p style="font-size: 0.75rem; color: var(--text-light);">Location: 180-CO!AU20</p>
+        </div>
+        <div class="info-card purple">
+          <h4>Status</h4>
+          <p style="font-size: 1rem; font-weight: 600;">Under Investigation</p>
+        </div>
+      </div>
+
+      <h4 style="margin: 20px 0 12px; color: var(--text);">Description</h4>
+      <p class="intro-text">The charge-off interest reconciliation fails for both 120-day and 180-day charge-off subledgers. While principal amounts reconcile correctly (checks #8 and #12 pass), the interest components including capitalized interest do not match between the subledger delta calculations and the validation totals.</p>
+
+      <h4 style="margin: 20px 0 12px; color: var(--text);">Source Files & References</h4>
+      <table class="validation-table">
+        <thead><tr><th>File/Location</th><th>Worksheet</th><th>Cell/Range</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Macro Purchase Parse.xlsm</strong></td><td>120-ChargeOff</td><td>AE2</td><td>120-day interest + capitalized interest delta validation</td></tr>
+          <tr><td><strong>Macro Purchase Parse.xlsm</strong></td><td>180-ChargeOff</td><td>AU20</td><td>180-day 3-way interest delta validation</td></tr>
+          <tr><td><strong>Day_Tape (Daily)</strong></td><td>ChargeOff records</td><td>Interest columns</td><td>Source interest amounts from LP</td></tr>
+          <tr><td><strong>Horizon Subledger</strong></td><td>120/180 CO accounts</td><td>Interest balance</td><td>CCB's recorded interest balance</td></tr>
+        </tbody>
+      </table>
+
+      <h4 style="margin: 20px 0 12px; color: var(--text);">Potential Root Causes</h4>
+      <div class="problem-impact">
+        <ul style="margin: 0 0 0 20px; font-size: 0.85rem;">
+          <li><strong>Capitalized Interest Timing:</strong> Interest capitalization may occur at different times between LP and CCB systems.</li>
+          <li><strong>Accrual Method Differences:</strong> LP may use a different interest accrual methodology than CCB's subledger.</li>
+          <li><strong>Partial Payments Applied Differently:</strong> When partial payments are received on charged-off loans, the interest allocation may differ.</li>
+          <li><strong>Backdated Adjustments:</strong> Late adjustments to charge-off records may not flow through both systems consistently.</li>
+        </ul>
+      </div>
+
+      <h4 style="margin: 20px 0 12px; color: var(--text);">Business Impact</h4>
+      <div class="problem-impact">
+        <ul style="margin: 0 0 0 20px; font-size: 0.85rem;">
+          <li><strong>Subledger Integrity:</strong> Charge-off subledgers may not accurately reflect interest recovery on bad debt.</li>
+          <li><strong>Financial Reporting:</strong> Interest income from charge-off recoveries may be misstated.</li>
+          <li><strong>Validation Reliability:</strong> Two of seventeen validation checks consistently failing reduces confidence in the overall reconciliation.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Issue #6: Canceled Loan Validation Failures -->
+  <section class="section-card">
+    <div class="section-header">
+      <div class="section-icon orange">⚠️</div>
+      <div class="section-title"><h2>Issue #6: Canceled Loan Validation Failures</h2><p>Medium Priority - Affects validation checks #16 and #17</p></div>
+    </div>
+    <div class="section-body">
+      <div class="info-grid">
+        <div class="info-card red">
+          <h4>Failing Check #16</h4>
+          <p style="font-size: 0.9rem; font-weight: 600;">Canceled Principal Match</p>
+          <p style="font-size: 0.75rem; color: var(--text-light);">Location: Parse!V13</p>
+        </div>
+        <div class="info-card red">
+          <h4>Failing Check #17</h4>
+          <p style="font-size: 0.9rem; font-weight: 600;">Canceled Interest Match</p>
+          <p style="font-size: 0.75rem; color: var(--text-light);">Location: Parse!W13</p>
+        </div>
+        <div class="info-card purple">
+          <h4>Related To</h4>
+          <p style="font-size: 0.9rem; font-weight: 600;">Issue #1 (Legacy Balance)</p>
+        </div>
+      </div>
+
+      <h4 style="margin: 20px 0 12px; color: var(--text);">Description</h4>
+      <p class="intro-text">The canceled loan validation checks fail because canceled/rescinded loan transactions are not properly reconciling between the payment file totals and the validation worksheet calculations. This is directly related to Issue #1, where "Canceled Loans Not Reported" was identified as a root cause of the legacy carry-over balance.</p>
+
+      <h4 style="margin: 20px 0 12px; color: var(--text);">Source Files & References</h4>
+      <table class="validation-table">
+        <thead><tr><th>File/Location</th><th>Worksheet</th><th>Cell/Range</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Macro Purchase Parse.xlsm</strong></td><td>Parse</td><td>V13</td><td>Canceled loan principal validation check</td></tr>
+          <tr><td><strong>Macro Purchase Parse.xlsm</strong></td><td>Parse</td><td>W13</td><td>Canceled loan interest validation check</td></tr>
+          <tr><td><strong>Macro Purchase Parse.xlsm</strong></td><td>Pymt_File</td><td>Canceled transactions</td><td>CANC- prefixed transaction records</td></tr>
+          <tr><td><strong>Daily LP Files</strong></td><td>Various</td><td>Rescission records</td><td>Loan cancellation/rescission notifications</td></tr>
+        </tbody>
+      </table>
+
+      <h4 style="margin: 20px 0 12px; color: var(--text);">Connection to Issue #1</h4>
+      <div class="problem-impact">
+        <p style="font-size: 0.85rem; margin-bottom: 10px;">The legacy carry-over balance (Issue #1) specifically identified "Canceled Loans Not Reported" as a primary factor. These validation failures confirm that the canceled loan reconciliation remains problematic:</p>
+        <ul style="margin: 0 0 0 20px; font-size: 0.85rem;">
+          <li><strong>Historical Orphaned Records:</strong> Canceled loans from the August 2023 migration were never properly closed out.</li>
+          <li><strong>Ongoing Discrepancies:</strong> New canceled loans may also fail to reconcile if the same systemic issue persists.</li>
+          <li><strong>Manual Workaround Impact:</strong> The exclusion of the $1.33M balance may mask ongoing canceled loan issues.</li>
+        </ul>
+      </div>
+
+      <h4 style="margin: 20px 0 12px; color: var(--text);">Business Impact</h4>
+      <div class="problem-impact">
+        <ul style="margin: 0 0 0 20px; font-size: 0.85rem;">
+          <li><strong>Rescission Compliance:</strong> Canceled/rescinded loans have regulatory timelines for fund returns.</li>
+          <li><strong>Settlement Account Accuracy:</strong> Unreconciled canceled loan amounts remain in the settlement account.</li>
+          <li><strong>Audit Trail:</strong> Inability to validate canceled loans creates documentation gaps for examiners.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Issue #7: Wire Variance (Penny Rounding) -->
+  <section class="section-card">
+    <div class="section-header">
+      <div class="section-icon blue">ℹ️</div>
+      <div class="section-title"><h2>Issue #7: Wire Variance from Penny Rounding</h2><p>Low Priority - Accepted variance, documented for completeness</p></div>
+    </div>
+    <div class="section-body">
+      <div class="info-grid">
+        <div class="info-card orange">
+          <h4>Current Variance</h4>
+          <p style="font-size: 1.4rem; font-weight: 700; color: var(--warning);">-$0.02</p>
+        </div>
+        <div class="info-card green">
+          <h4>Maximum Expected</h4>
+          <p style="font-size: 1.4rem; font-weight: 700; color: var(--success);">$0.09/payment</p>
+        </div>
+        <div class="info-card blue">
+          <h4>Status</h4>
+          <p style="font-size: 1rem; font-weight: 600;">Accepted / Auto-Adjusted</p>
+        </div>
+      </div>
+
+      <h4 style="margin: 20px 0 12px; color: var(--text);">Description</h4>
+      <p class="intro-text">Validation checks #3 (Top Debit Match Wire) and #4 (Remitted Amount = Wire) fail by $0.02 due to Out of Balance (OOB) penny rounding. This occurs when Principal + Interest does not exactly equal the Total Payment amount due to rounding at different precision levels. This is an expected and accepted variance that is auto-captured and adjusted.</p>
+
+      <h4 style="margin: 20px 0 12px; color: var(--text);">Source Files & References</h4>
+      <table class="validation-table">
+        <thead><tr><th>File/Location</th><th>Worksheet</th><th>Cell/Range</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Macro Purchase Parse.xlsm</strong></td><td>Parse</td><td>N16</td><td>Check #3: Top Debit Match Wire validation</td></tr>
+          <tr><td><strong>Macro Purchase Parse.xlsm</strong></td><td>Parse</td><td>N18</td><td>Check #4: Remitted Amount = Wire validation</td></tr>
+          <tr><td><strong>Macro Purchase Parse.xlsm</strong></td><td>Pymt_File</td><td>Column AA (OOB)</td><td>Out-of-Balance penny discrepancy per transaction</td></tr>
+          <tr><td><strong>Macro Purchase Parse.xlsm</strong></td><td>OOB_Filter</td><td>All rows</td><td>Filtered view of all OOB transactions</td></tr>
+          <tr><td><strong>Macro Purchase Parse.xlsm</strong></td><td>Parse</td><td>Row 25</td><td>Net OOB adjustment captured in ATE</td></tr>
+        </tbody>
+      </table>
+
+      <h4 style="margin: 20px 0 12px; color: var(--text);">Why This Is Accepted</h4>
+      <div class="problem-impact">
+        <ul style="margin: 0 0 0 20px; font-size: 0.85rem;">
+          <li><strong>Industry Standard:</strong> Penny rounding variances are common in payment processing and typically immaterial.</li>
+          <li><strong>Auto-Captured:</strong> The OOB_Filter worksheet isolates all transactions where OOB ≠ 0, and Parse row 25 captures the net adjustment.</li>
+          <li><strong>Monthly True-Up:</strong> Accumulated OOB amounts are settled with LendingPoint during the monthly true-up process.</li>
+          <li><strong>Bounded Variance:</strong> Maximum OOB per payment is $0.09, making the risk of material accumulation minimal.</li>
+        </ul>
+      </div>
+
+      <h4 style="margin: 20px 0 12px; color: var(--text);">Monitoring Recommendation</h4>
+      <div class="problem-impact">
+        <ul style="margin: 0 0 0 20px; font-size: 0.85rem;">
+          <li><strong>Alert Threshold:</strong> If wire variance exceeds $1.00, investigate for non-OOB causes.</li>
+          <li><strong>Monthly Review:</strong> Verify OOB adjustments are included in monthly true-up with LP.</li>
+          <li><strong>Documentation:</strong> This issue formalizes the accepted variance for audit trail purposes.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
 </div>
 
 <!-- ========== GLOSSARY TAB ========== -->
