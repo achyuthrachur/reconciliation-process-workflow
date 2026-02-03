@@ -318,16 +318,13 @@
       font-size: 0.75rem;
       color: var(--ccb-blue);
     }
-    .expandable-info-header .expand-icon::before {
-      content: 'Click to expand ';
-      font-size: 0.7rem;
-      opacity: 0.7;
-    }
-    .expandable-info.expanded .expand-icon::before {
-      content: 'Click to collapse ';
-    }
     .expandable-info.expanded .expand-icon {
       transform: rotate(180deg);
+    }
+    .expandable-info-header .expand-text {
+      font-size: 0.7rem;
+      opacity: 0.7;
+      margin-right: 4px;
     }
     .expandable-info-content {
       max-height: 0;
@@ -533,16 +530,18 @@
       cursor: pointer;
       transition: all 0.3s;
     }
-    .timeline-step:has(.timeline-details) .timeline-content::after {
-      content: '▼ Click to expand';
+    .timeline-step .expand-hint {
       display: block;
       font-size: 0.7rem;
       color: var(--ccb-blue);
       margin-top: 8px;
       opacity: 0.7;
     }
-    .timeline-step.expanded:has(.timeline-details) .timeline-content::after {
-      content: '▲ Click to collapse';
+    .timeline-step.expanded .expand-hint::before {
+      content: '▲ ';
+    }
+    .timeline-step:not(.expanded) .expand-hint::before {
+      content: '▼ ';
     }
     .timeline-content:hover { box-shadow: var(--shadow); transform: translateX(4px); }
     .timeline-content h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; }
@@ -2378,41 +2377,70 @@
     });
 
     // Timeline expansion with animation
-    document.querySelectorAll('.timeline-content').forEach(content => {
-      content.addEventListener('click', () => {
-        const step = content.closest('.timeline-step');
+    document.querySelectorAll('.timeline-step').forEach(step => {
+      const details = step.querySelector('.timeline-details');
+      const content = step.querySelector('.timeline-content');
+      if (!details || !content) return;
+
+      // Add expand hint dynamically
+      const hint = document.createElement('span');
+      hint.className = 'expand-hint';
+      hint.textContent = 'Click to expand';
+      content.appendChild(hint);
+
+      content.addEventListener('click', function(e) {
+        e.stopPropagation();
         const wasExpanded = step.classList.contains('expanded');
         step.classList.toggle('expanded');
+        hint.textContent = wasExpanded ? 'Click to expand' : 'Click to collapse';
 
-        if (!wasExpanded) {
-          const details = step.querySelector('.timeline-details');
-          if (details) {
-            anime({
-              targets: details,
-              opacity: [0, 1],
-              translateY: [-10, 0],
-              duration: 300,
-              easing: 'easeOutExpo'
-            });
-          }
+        if (!wasExpanded && typeof anime !== 'undefined') {
+          anime({
+            targets: details,
+            opacity: [0, 1],
+            translateY: [-10, 0],
+            duration: 300,
+            easing: 'easeOutExpo'
+          });
         }
       });
     });
 
     // Expandable info cards
     document.querySelectorAll('.expandable-info-header').forEach(header => {
-      header.addEventListener('click', () => {
-        const card = header.closest('.expandable-info');
+      const card = header.closest('.expandable-info');
+      if (!card) return;
+
+      // Add expand text before the icon
+      const icon = header.querySelector('.expand-icon');
+      if (icon) {
+        const expandText = document.createElement('span');
+        expandText.className = 'expand-text';
+        expandText.textContent = 'Click to expand';
+        icon.parentNode.insertBefore(expandText, icon);
+      }
+
+      header.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const wasExpanded = card.classList.contains('expanded');
         card.classList.toggle('expanded');
 
-        if (card.classList.contains('expanded')) {
+        // Update text
+        const expandText = header.querySelector('.expand-text');
+        if (expandText) {
+          expandText.textContent = wasExpanded ? 'Click to expand' : 'Click to collapse';
+        }
+
+        if (!wasExpanded && typeof anime !== 'undefined') {
           const content = card.querySelector('.expandable-info-body');
-          anime({
-            targets: content,
-            opacity: [0, 1],
-            duration: 300,
-            easing: 'easeOutExpo'
-          });
+          if (content) {
+            anime({
+              targets: content,
+              opacity: [0, 1],
+              duration: 300,
+              easing: 'easeOutExpo'
+            });
+          }
         }
       });
     });
