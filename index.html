@@ -1567,8 +1567,14 @@
             <tr><td>7</td><td>Returns Match RTA</td><td>Parse!N34</td><td>Y</td><td>Return entries match RTA transaction totals</td><td><span class="status-badge pass">✓ Pass</span></td></tr>
             <tr><td>8</td><td>120-ChargeOff Principal Match</td><td>120-CO!AE1</td><td>Y</td><td>Principal delta matches calculated change</td><td><span class="status-badge pass">✓ Pass</span></td></tr>
             <tr><td>9</td><td>120-ChargeOff Interest Match</td><td>120-CO!AE2</td><td>Y</td><td>Interest + Capitalized Interest delta matches</td><td><span class="status-badge fail">✗ Fail</span></td></tr>
-            <tr><td>10</td><td>180-ChargeOff Principal Match</td><td>180-CO!AT20</td><td>Y</td><td>3-way validation of principal deltas</td><td><span class="status-badge pass">✓ Pass</span></td></tr>
-            <tr><td>11</td><td>180-ChargeOff Interest Match</td><td>180-CO!AU20</td><td>Y</td><td>3-way validation of interest deltas</td><td><span class="status-badge fail">✗ Fail</span></td></tr>
+            <tr><td>10</td><td>120-CO Recon Principal</td><td>120-CO!AE3</td><td>Y</td><td>Reconciled principal matches Sub-ledger delta</td><td><span class="status-badge pass">✓ Pass</span></td></tr>
+            <tr><td>11</td><td>120-CO Recon Interest</td><td>120-CO!AE4</td><td>Y</td><td>Reconciled interest matches Sub-ledger delta</td><td><span class="status-badge pass">✓ Pass</span></td></tr>
+            <tr><td>12</td><td>180-ChargeOff Principal Match</td><td>180-CO!AT20</td><td>Y</td><td>3-way validation of principal deltas</td><td><span class="status-badge pass">✓ Pass</span></td></tr>
+            <tr><td>13</td><td>180-ChargeOff Interest Match</td><td>180-CO!AU20</td><td>Y</td><td>3-way validation of interest deltas</td><td><span class="status-badge fail">✗ Fail</span></td></tr>
+            <tr><td>14</td><td>180 TrueUp Principal</td><td>Parse!L7</td><td>Y</td><td>180-CO TrueUp principal matches 180-ChargeOff!AT18</td><td><span class="status-badge pass">✓ Pass</span></td></tr>
+            <tr><td>15</td><td>180 TrueUp Interest</td><td>Parse!L8</td><td>Y</td><td>180-CO TrueUp interest matches 180-ChargeOff!AU18</td><td><span class="status-badge pass">✓ Pass</span></td></tr>
+            <tr><td>16</td><td>Canceled Principal Match</td><td>Parse!V13</td><td>Y</td><td>Canceled loan principal matches validation total</td><td><span class="status-badge fail">✗ Fail</span></td></tr>
+            <tr><td>17</td><td>Canceled Interest Match</td><td>Parse!W13</td><td>Y</td><td>Canceled loan interest matches validation total</td><td><span class="status-badge fail">✗ Fail</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -2425,6 +2431,11 @@
         popup.insertBefore(closeBtn, popup.firstChild);
       }
 
+      // Move popup to body to escape any transformed ancestors that break fixed positioning
+      popup._originalParent = popup.parentNode;
+      popup._originalNextSibling = popup.nextSibling;
+      document.body.appendChild(popup);
+
       // Show the popup
       popup.classList.add('show');
       popup.style.display = 'block';
@@ -2441,6 +2452,16 @@
       document.querySelectorAll('.info-popup.show').forEach(function(p) {
         p.classList.remove('show');
         p.style.display = '';
+        // Restore popup to its original location in the DOM
+        if (p._originalParent) {
+          if (p._originalNextSibling) {
+            p._originalParent.insertBefore(p, p._originalNextSibling);
+          } else {
+            p._originalParent.appendChild(p);
+          }
+          p._originalParent = null;
+          p._originalNextSibling = null;
+        }
       });
       document.querySelectorAll('.info-term.active').forEach(function(t) {
         t.classList.remove('active');
