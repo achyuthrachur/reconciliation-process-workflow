@@ -698,9 +698,121 @@
       .journey-stages { flex-wrap: wrap; gap: 16px; justify-content: center; }
       .info-popup { width: 220px; font-size: 0.7rem; }
     }
+
+  /* ========== PRINT / PDF EXPORT STYLES ========== */
+  @media screen {
+    #print-cover { display: none; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 20mm 15mm; }
+    @page :first { margin-top: 0; margin-bottom: 0; }
+
+    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important; }
+
+    /* Crowe brand color overrides */
+    :root {
+      --ccb-navy: #011E41;
+      --ccb-blue: #003F9F;
+      --ccb-teal: #05AB8C;
+      --warning: #F5A800;
+      --warning-light: #FFF8E7;
+    }
+
+    /* Reveal all hidden tab panels and expandable content */
+    .tab-panel { display: block !important; }
+    .timeline-details { display: block !important; }
+    .stage-detail-panel { display: block !important; }
+
+    /* Hide screen-only UI elements */
+    .nav-container { display: none !important; }
+    .header-bg-shapes { display: none !important; }
+    #print-btn { display: none !important; }
+    .info-popup { display: none !important; }
+    .info-icon { display: none !important; }
+
+    /* Page breaks: each section starts on a new page */
+    .tab-panel { page-break-before: always; break-before: page; }
+    /* Overview follows the header on page 2 — no break needed */
+    #overview { page-break-before: avoid; break-before: avoid; }
+
+    /* Crowe Indigo header background */
+    .header { background: #011E41 !important; }
+
+    /* Cover page: shown only in print */
+    #print-cover {
+      display: flex !important;
+      page-break-after: always;
+      break-after: page;
+      min-height: 100vh;
+      background: #ffffff;
+      color: #011E41;
+      padding: 80px 60px;
+      flex-direction: column;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+    #print-cover .cover-wordmark {
+      font-size: 36pt;
+      font-weight: 700;
+      color: #011E41;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+    #print-cover .cover-separator {
+      height: 2px;
+      background: #011E41;
+      width: 80px;
+      margin-bottom: 48px;
+    }
+    #print-cover .cover-title {
+      font-size: 22pt;
+      font-weight: 700;
+      color: #011E41;
+      margin-bottom: 12px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+    #print-cover .cover-subtitle {
+      font-size: 14pt;
+      color: #4F4F4F;
+      margin-bottom: 8px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+    #print-cover .cover-date {
+      font-size: 11pt;
+      color: #828282;
+      margin-bottom: 0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+    #print-cover .cover-amber-bar {
+      height: 4px;
+      background: #F5A800;
+      width: 120px;
+      margin: 40px 0 20px;
+    }
+    #print-cover .cover-confidential {
+      font-size: 9pt;
+      color: #4F4F4F;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+  }
   </style>
 </head>
 <body>
+
+<!-- Print-only cover page (hidden on screen) -->
+<div id="print-cover">
+  <div class="cover-wordmark">CROWE</div>
+  <div class="cover-separator"></div>
+  <div class="cover-title">LendingPoint Reconciliation Process Guide</div>
+  <div class="cover-subtitle">Coastal Community Bank</div>
+  <div class="cover-date">February 2026</div>
+  <div class="cover-amber-bar"></div>
+  <div class="cover-confidential">For Internal Use Only</div>
+</div>
 
 <header class="header">
   <div class="header-bg-shapes">
@@ -718,6 +830,7 @@
     </div>
     <h2 class="header-title">LendingPoint Complete Reconciliation Guide</h2>
     <p class="header-subtitle">A comprehensive guide to understanding loan payment flows, reconciliation processes, problem areas, and strategic fixes.</p>
+    <button id="print-btn" onclick="window.print()" style="margin-top:20px;padding:10px 22px;background:#F5A800;color:#011E41;border:none;border-radius:6px;font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;letter-spacing:0.03em;">&#128438; Save as PDF</button>
   </div>
 </header>
 
