@@ -1,0 +1,2033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LendingPoint Reconciliation Process Guide | Crowe LLP</title>
+  <style>
+    /* ===== CROWE BRAND TOKENS ===== */
+    :root {
+      --indigo-dark:   #011E41;
+      --indigo-core:   #002E62;
+      --indigo-bright: #003F9F;
+      --amber-core:    #F5A800;
+      --amber-bright:  #FFD231;
+      --amber-light:   #FFF8E7;
+      --teal:          #05AB8C;
+      --teal-light:    #E6FAF6;
+      --coral:         #E5376B;
+      --coral-light:   #FDEEF3;
+      --blue:          #0075C9;
+      --blue-light:    #E8F4FC;
+      --text:          #333333;
+      --text-sec:      #4F4F4F;
+      --text-muted:    #828282;
+      --border:        #E0E0E0;
+      --bg:            #f8fafc;
+      --card-bg:       #ffffff;
+    }
+
+    /* ===== PAGE SETUP ===== */
+    @page { size: A4; margin: 18mm 14mm; }
+    @page :first { margin: 0; }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 9pt;
+      color: var(--text);
+      line-height: 1.5;
+      background: var(--bg);
+    }
+
+    /* ===== COVER PAGE ===== */
+    #cover {
+      width: 210mm;
+      min-height: 297mm;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px 64px;
+      page-break-after: always;
+      break-after: page;
+      position: relative;
+    }
+
+    #cover .cover-top-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 8px;
+      background: var(--indigo-dark);
+    }
+
+    #cover .cover-wordmark {
+      font-size: 40pt;
+      font-weight: 700;
+      color: var(--indigo-dark);
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+      line-height: 1;
+    }
+
+    #cover .cover-separator {
+      height: 2px;
+      width: 80px;
+      background: var(--indigo-dark);
+      margin-bottom: 52px;
+    }
+
+    #cover .cover-title {
+      font-size: 22pt;
+      font-weight: 700;
+      color: var(--indigo-dark);
+      margin-bottom: 14px;
+      line-height: 1.2;
+    }
+
+    #cover .cover-subtitle {
+      font-size: 14pt;
+      color: var(--text-sec);
+      margin-bottom: 8px;
+    }
+
+    #cover .cover-date {
+      font-size: 11pt;
+      color: var(--text-muted);
+    }
+
+    #cover .cover-amber-bar {
+      height: 4px;
+      width: 120px;
+      background: var(--amber-core);
+      margin: 48px 0 16px;
+    }
+
+    #cover .cover-footer {
+      font-size: 8pt;
+      color: var(--text-sec);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    #cover .cover-bottom-accent {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--amber-core);
+    }
+
+    /* ===== CONTENT SECTIONS ===== */
+    .section {
+      page-break-before: always;
+      break-before: page;
+      padding: 0;
+    }
+
+    .section-header-band {
+      background: var(--indigo-dark);
+      padding: 16px 22px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border-left: 5px solid var(--amber-core);
+      margin-bottom: 18px;
+    }
+
+    .section-badge {
+      background: var(--amber-core);
+      color: var(--indigo-dark);
+      font-weight: 700;
+      font-size: 9pt;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .section-header-band h1 {
+      font-size: 14pt;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0;
+    }
+
+    .section-header-band .section-subtitle {
+      font-size: 8pt;
+      color: rgba(255,255,255,0.7);
+      margin-top: 2px;
+    }
+
+    .section-body {
+      padding: 0 4px;
+    }
+
+    /* ===== SUBSECTION ===== */
+    .subsection {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+
+    .subsection-header {
+      background: var(--indigo-core);
+      color: white;
+      padding: 8px 14px;
+      font-weight: 700;
+      font-size: 9pt;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .subsection-body {
+      padding: 14px;
+    }
+
+    /* ===== STATS ROW ===== */
+    .stats-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      flex: 1;
+      min-width: 90px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px 10px;
+      text-align: center;
+      border-top: 3px solid var(--amber-core);
+    }
+
+    .stat-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--amber-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 6px;
+      font-size: 14px;
+    }
+
+    .stat-value {
+      font-size: 13pt;
+      font-weight: 700;
+      color: var(--indigo-dark);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 7pt;
+      color: var(--text-muted);
+      margin-top: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* ===== INFO GRID ===== */
+    .info-grid {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 12px 0;
+    }
+
+    .info-card {
+      flex: 1;
+      min-width: 130px;
+      background: var(--bg);
+      border-radius: 5px;
+      padding: 10px 12px;
+      border-left: 4px solid var(--indigo-bright);
+    }
+    .info-card.teal   { border-left-color: var(--teal); background: var(--teal-light); }
+    .info-card.amber  { border-left-color: var(--amber-core); background: var(--amber-light); }
+    .info-card.coral  { border-left-color: var(--coral); background: var(--coral-light); }
+    .info-card.blue   { border-left-color: var(--blue); background: var(--blue-light); }
+    .info-card.indigo { border-left-color: var(--indigo-dark); background: #EEF2F8; }
+
+    .info-card h4 {
+      font-size: 8.5pt;
+      font-weight: 700;
+      color: var(--indigo-dark);
+      margin-bottom: 4px;
+    }
+
+    .info-card p {
+      font-size: 8pt;
+      color: var(--text-sec);
+      line-height: 1.4;
+    }
+
+    /* ===== KEY CONCEPT ===== */
+    .key-concept {
+      background: var(--blue-light);
+      border-left: 4px solid var(--indigo-bright);
+      border-radius: 0 5px 5px 0;
+      padding: 12px 14px;
+      margin: 12px 0;
+    }
+
+    .key-concept h4 {
+      font-size: 8.5pt;
+      font-weight: 700;
+      color: var(--indigo-dark);
+      margin-bottom: 4px;
+    }
+
+    .key-concept p {
+      font-size: 8pt;
+      color: var(--text-sec);
+      line-height: 1.5;
+    }
+
+    /* ===== INTRO TEXT ===== */
+    .intro-text {
+      font-size: 8.5pt;
+      color: var(--text-sec);
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+
+    /* ===== FORMULA BOX ===== */
+    .formula-box {
+      background: var(--indigo-dark);
+      border-radius: 5px;
+      padding: 10px 14px;
+      margin: 10px 0;
+    }
+
+    .formula-code {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 7.5pt;
+      color: #FFD231;
+      margin-bottom: 6px;
+      word-break: break-all;
+      line-height: 1.4;
+    }
+
+    .formula-breakdown {
+      font-size: 7.5pt;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.4;
+    }
+
+    .formula-field {
+      display: inline;
+      background: rgba(255,255,255,0.15);
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: #93C5FD;
+      font-family: 'Courier New', monospace;
+    }
+
+    /* ===== INLINE CODE ===== */
+    code {
+      font-family: 'Courier New', monospace;
+      font-size: 7.5pt;
+      background: #EEF2F8;
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: var(--indigo-core);
+    }
+
+    /* ===== SVG FLOW DIAGRAM ===== */
+    .flow-container {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      margin: 12px 0;
+    }
+
+    .flow-svg { display: block; width: 100%; }
+
+    /* ===== WIRE EQUATION ===== */
+    .wire-equation {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px;
+      flex-wrap: wrap;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin: 12px 0;
+    }
+
+    .wire-box {
+      border: 2px solid;
+      border-radius: 6px;
+      padding: 12px 18px;
+      text-align: center;
+      min-width: 120px;
+    }
+
+    .wire-box.credit { border-color: var(--teal); background: var(--teal-light); }
+    .wire-box.debit  { border-color: var(--coral); background: var(--coral-light); }
+    .wire-box.result { border-color: var(--indigo-bright); background: var(--blue-light); }
+
+    .wire-box .wb-label { font-size: 7pt; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+    .wire-box .wb-value { font-size: 12pt; font-weight: 700; color: var(--indigo-dark); }
+
+    .wire-operator { font-size: 16pt; color: var(--text-muted); font-weight: 300; }
+
+    /* ===== TIMELINE ===== */
+    .timeline {
+      position: relative;
+      padding-left: 40px;
+      margin: 12px 0;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 14px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .timeline-step {
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    .timeline-marker {
+      position: absolute;
+      left: -40px;
+      top: 8px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 8pt;
+      color: white;
+      background: var(--indigo-dark);
+      z-index: 1;
+    }
+
+    .timeline-step.completed .timeline-marker {
+      background: var(--teal);
+    }
+
+    .timeline-content {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 10px 12px;
+    }
+
+    .timeline-content h4 {
+      font-size: 8.5pt;
+      font-weight: 700;
+      color: var(--indigo-dark);
+      margin-bottom: 3px;
+    }
+
+    .timeline-content p {
+      font-size: 8pt;
+      color: var(--text-sec);
+      line-height: 1.4;
+    }
+
+    .timeline-details {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+    .detail-list {
+      list-style: none;
+      margin: 4px 0;
+    }
+
+    .detail-list li {
+      font-size: 7.5pt;
+      color: var(--text-sec);
+      padding: 2px 0 2px 14px;
+      position: relative;
+      line-height: 1.4;
+    }
+
+    .detail-list li::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      color: var(--amber-core);
+      font-weight: 700;
+    }
+
+    /* ===== TABLES ===== */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 7.5pt;
+      margin: 10px 0;
+    }
+
+    .data-table th {
+      background: var(--indigo-dark);
+      color: white;
+      padding: 6px 10px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 7pt;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .data-table td {
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      line-height: 1.3;
+    }
+
+    .data-table tbody tr:nth-child(even) td {
+      background: #F7F9FC;
+    }
+
+    .data-table td strong { color: var(--indigo-dark); }
+
+    /* ===== VALIDATION TABLE ===== */
+    .validation-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 7.5pt;
+      margin: 10px 0;
+    }
+
+    .validation-table th {
+      background: var(--indigo-dark);
+      color: white;
+      padding: 6px 8px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 6.5pt;
+      text-transform: uppercase;
+    }
+
+    .validation-table td {
+      padding: 5px 8px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .validation-table tbody tr:nth-child(even) td {
+      background: #F7F9FC;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 6.5pt;
+      font-weight: 600;
+    }
+
+    .badge.pass { background: #D1FAF0; color: #065F46; }
+    .badge.fail { background: var(--coral-light); color: #7B1234; }
+
+    /* ===== ACCOUNT GRID ===== */
+    .account-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .account-card {
+      background: var(--card-bg);
+      border: 2px solid transparent;
+      border-radius: 5px;
+      padding: 8px 10px;
+      text-align: center;
+      min-width: 100px;
+      flex: 1;
+    }
+
+    .account-card.settlement { border-color: var(--teal); background: var(--teal-light); }
+    .account-card.gl-asset   { border-color: var(--blue); background: var(--blue-light); }
+    .account-card.gl-income  { border-color: var(--teal); background: #EEF9F7; }
+
+    .account-number {
+      font-family: 'Courier New', monospace;
+      font-size: 8pt;
+      font-weight: 700;
+      color: var(--indigo-dark);
+    }
+
+    .account-name {
+      font-size: 6.5pt;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ===== GLOSSARY GRID ===== */
+    .glossary-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      list-style: none;
+      margin: 10px 0;
+    }
+
+    .glossary-item {
+      flex: 1;
+      min-width: 140px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--amber-core);
+      border-radius: 0 5px 5px 0;
+      padding: 8px 10px;
+    }
+
+    .glossary-item dt {
+      font-size: 8pt;
+      font-weight: 700;
+      color: var(--amber-core);
+      margin-bottom: 3px;
+    }
+
+    .glossary-item dd {
+      font-size: 7.5pt;
+      color: var(--text-sec);
+      line-height: 1.4;
+    }
+
+    .column-badge {
+      display: inline-block;
+      background: var(--blue-light);
+      color: var(--indigo-bright);
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-size: 6.5pt;
+      font-family: 'Courier New', monospace;
+      margin-top: 4px;
+    }
+
+    /* ===== PROBLEM CARDS ===== */
+    .problem-impact {
+      background: var(--coral-light);
+      border: 1px solid #F8C4D5;
+      border-radius: 5px;
+      padding: 10px 12px;
+      margin: 8px 0;
+      font-size: 8pt;
+    }
+
+    .problem-impact strong { color: var(--coral); }
+
+    .problem-impact ul {
+      margin: 6px 0 0 16px;
+      font-size: 7.5pt;
+      line-height: 1.5;
+    }
+
+    /* ===== JOURNEY TRACK ===== */
+    .journey-track {
+      display: flex;
+      gap: 0;
+      margin: 14px 0;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .journey-stage {
+      flex: 1;
+      text-align: center;
+      padding: 12px 6px;
+      background: var(--card-bg);
+      border-right: 1px solid var(--border);
+      position: relative;
+    }
+
+    .journey-stage:last-child { border-right: none; }
+    .journey-stage.s1 { background: var(--teal-light); border-top: 3px solid var(--teal); }
+    .journey-stage.s2 { background: var(--amber-light); border-top: 3px solid var(--amber-core); }
+    .journey-stage.s3 { background: #FFF0E8; border-top: 3px solid #F5821E; }
+    .journey-stage.s4 { background: var(--coral-light); border-top: 3px solid var(--coral); }
+    .journey-stage.s5 { background: var(--blue-light); border-top: 3px solid var(--blue); }
+
+    .journey-stage .js-icon  { font-size: 16px; margin-bottom: 4px; }
+    .journey-stage .js-title { font-size: 7.5pt; font-weight: 700; color: var(--indigo-dark); }
+    .journey-stage .js-desc  { font-size: 6.5pt; color: var(--text-muted); margin-top: 2px; }
+
+    /* ===== SECTION GROUP HEADING ===== */
+    .group-heading {
+      font-size: 8.5pt;
+      font-weight: 700;
+      color: var(--indigo-dark);
+      border-bottom: 2px solid var(--amber-core);
+      padding-bottom: 4px;
+      margin: 14px 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* ===== FORMULA SIMPLE BOX ===== */
+    .formula-simple {
+      font-family: 'Courier New', monospace;
+      font-size: 7.5pt;
+      background: #EEF2F8;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 6px 10px;
+      color: var(--indigo-core);
+      display: inline-block;
+      margin: 4px 0;
+    }
+
+    /* ===== PAGE FOOTER ===== */
+    @page {
+      @bottom-center {
+        content: "LendingPoint Reconciliation Process Guide | Coastal Community Bank | Prepared by Crowe LLP | February 2026";
+        font-size: 6pt;
+        color: #828282;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      }
+      @bottom-right {
+        content: counter(page);
+        font-size: 7pt;
+        color: #828282;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      }
+    }
+
+    /* ===== HELPERS ===== */
+    .mt-8  { margin-top: 8px; }
+    .mt-12 { margin-top: 12px; }
+    .mb-8  { margin-bottom: 8px; }
+    .bold  { font-weight: 700; }
+    .indigo { color: var(--indigo-dark); }
+    .amber { color: var(--amber-core); }
+    .teal-text { color: var(--teal); }
+    .coral-text { color: var(--coral); }
+    .muted { color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     COVER PAGE
+     ============================================================ -->
+<div id="cover">
+  <div class="cover-top-bar"></div>
+
+  <div class="cover-wordmark">CROWE</div>
+  <div class="cover-separator"></div>
+
+  <div class="cover-title">LendingPoint Reconciliation<br>Process Guide</div>
+  <div class="cover-subtitle">Coastal Community Bank</div>
+  <div class="cover-date">February 2026</div>
+
+  <div class="cover-amber-bar"></div>
+  <div class="cover-footer">Prepared by Crowe LLP &nbsp;&middot;&nbsp; For Internal Use Only</div>
+
+  <div class="cover-bottom-accent"></div>
+</div>
+
+
+<!-- ============================================================
+     SECTION 1: OVERVIEW
+     ============================================================ -->
+<div class="section" id="s-overview">
+  <div class="section-header-band">
+    <div class="section-badge">1</div>
+    <div>
+      <h1>Overview</h1>
+      <div class="section-subtitle">Reconciliation fundamentals, key concepts, and daily volumes</div>
+    </div>
+  </div>
+
+  <div class="section-body">
+
+    <!-- Stat Cards -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon">💵</div>
+        <div class="stat-value">$772K+</div>
+        <div class="stat-label">Daily Wire</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-value">59,812</div>
+        <div class="stat-label">Transactions/Day</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🏠</div>
+        <div class="stat-value">32,292</div>
+        <div class="stat-label">Active Loans</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">✓</div>
+        <div class="stat-value">17</div>
+        <div class="stat-label">Validation Checks</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📑</div>
+        <div class="stat-value">15</div>
+        <div class="stat-label">Worksheets</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-header">What is Reconciliation?</div>
+      <div class="subsection-body">
+        <p class="intro-text">
+          <strong>Reconciliation</strong> verifies that two sets of records match. For LendingPoint,
+          <strong>CCB (Coastal Community Bank)</strong> acts as the bank of record for consumer and commercial loans.
+          LendingPoint originates and services the loans, but CCB holds the underlying accounts.
+          Every day, payments flow between borrowers, LendingPoint, and CCB. <strong>Reconciliation ensures every dollar is accounted for.</strong>
+        </p>
+        <div class="key-concept">
+          <h4>The Core Question</h4>
+          <p>At the end of each day, does the cash in our <strong>settlement account (1600020521)</strong> match what
+          the transactions say should be there? If not, why not, and how do we fix it?</p>
+        </div>
+        <div class="info-grid">
+          <div class="info-card blue">
+            <h4>Money Coming In</h4>
+            <p>Wire transfers from LendingPoint containing borrower payments (Principal, Interest, Fees)</p>
+          </div>
+          <div class="info-card teal">
+            <h4>Money Going Out</h4>
+            <p>Loan payments applied to accounts, refunds to borrowers, fees to service providers</p>
+          </div>
+          <div class="info-card amber">
+            <h4>The Balance</h4>
+            <p>After matching all ins and outs, the settlement account should balance to zero (or a known outstanding amount)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-header">Two Reconciliation Streams</div>
+      <div class="subsection-body">
+        <div class="info-grid">
+          <div class="info-card indigo">
+            <h4>Repayments Settlement (1600020521)</h4>
+            <p>Tracks the daily wire transfers that settle borrower payments. <strong>File:</strong> DAILY LendingPoint Repayment workbook</p>
+          </div>
+          <div class="info-card teal">
+            <h4>Purchase Parse (Macro Workbook)</h4>
+            <p>Processes loan-level payment data, generates ATE entries, tracks charge-offs. <strong>File:</strong> Macro Purchase Parse workbook</p>
+          </div>
+        </div>
+        <div class="key-concept">
+          <h4>How They Connect</h4>
+          <p>Repayments reconciles the <em>cash</em> (did we get the right wire?), while Purchase Parse reconciles the <em>details</em>
+          (which loans did payments apply to?). Both must agree.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-header">Key Concepts &amp; Terminology</div>
+      <div class="subsection-body">
+        <div class="info-grid">
+          <div class="info-card teal">
+            <h4>Day Tapes</h4>
+            <p><strong>Day1_Tape:</strong> Yesterday's loan snapshot (32,292 loans). <strong>Day2_Tape:</strong> Today's snapshot.
+            Comparing reveals changes in loan balances, status, and delinquency.</p>
+          </div>
+          <div class="info-card blue">
+            <h4>Transaction Prefixes</h4>
+            <p>
+              <code>LPT-</code>: Loan Payment Transaction<br>
+              <code>RTA-</code>: Return Transaction<br>
+              <code>ADJ-</code>: Adjustment Transaction
+            </p>
+          </div>
+          <div class="info-card teal">
+            <h4>Product Types</h4>
+            <p>
+              <strong>Consumer:</strong> DTC (Direct-to-Consumer), POS (Point of Sale)<br>
+              <strong>Commercial:</strong> eBay, JOOR
+            </p>
+          </div>
+        </div>
+        <div class="info-grid mt-8">
+          <div class="info-card amber">
+            <h4>DPD Thresholds</h4>
+            <p>
+              <strong>120 DPD:</strong> CCB internal charge-off — enters 120Subledger<br>
+              <strong>180 DPD:</strong> LendingPoint official charge-off — <code>Charge_Off_Date</code> populated
+            </p>
+          </div>
+          <div class="info-card indigo">
+            <h4>Excess Payments</h4>
+            <p>When a borrower pays more than the amount due. Overpayments (Column J: Excess) are held in the settlement account until refunded.</p>
+          </div>
+          <div class="info-card coral">
+            <h4>Out of Balance (OOB)</h4>
+            <p>Penny rounding where Principal + Interest &ne; Total. Maximum $0.09/payment. Auto-adjusted via the OOB_Filter worksheet.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ============================================================
+     SECTION 2: DAILY REPAYMENTS
+     ============================================================ -->
+<div class="section" id="s-repayments">
+  <div class="section-header-band">
+    <div class="section-badge">2</div>
+    <div>
+      <h1>Daily Repayments</h1>
+      <div class="section-subtitle">Payment flow, wire matching, and daily reconciliation steps</div>
+    </div>
+  </div>
+
+  <div class="section-body">
+
+    <div class="subsection">
+      <div class="subsection-header">Daily Repayments Flow</div>
+      <div class="subsection-body">
+        <p class="intro-text">Every business day, LendingPoint collects payments and sends a wire to CCB's settlement account (1600020521). The reconciliation verifies this wire matches expected payment amounts.</p>
+
+        <!-- SVG Flow Diagram — recolored with Crowe brand -->
+        <div class="flow-container">
+          <svg class="flow-svg" viewBox="0 0 900 200" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+            <!-- Borrowers -->
+            <rect x="10" y="60" width="100" height="60" rx="8" fill="#EEF2F8" stroke="#002E62" stroke-width="2"/>
+            <text x="60" y="85" text-anchor="middle" font-size="11" font-weight="600" fill="#011E41">Borrowers</text>
+            <text x="60" y="100" text-anchor="middle" font-size="9" fill="#4F4F4F">Payments</text>
+
+            <!-- LendingPoint -->
+            <rect x="140" y="60" width="120" height="60" rx="8" fill="#E6FAF6" stroke="#05AB8C" stroke-width="2"/>
+            <text x="200" y="85" text-anchor="middle" font-size="11" font-weight="600" fill="#011E41">LendingPoint</text>
+            <text x="200" y="100" text-anchor="middle" font-size="9" fill="#4F4F4F">Collects &amp; Remits</text>
+
+            <!-- Wire Transfer -->
+            <rect x="290" y="60" width="130" height="60" rx="8" fill="#FFF8E7" stroke="#F5A800" stroke-width="2"/>
+            <text x="355" y="82" text-anchor="middle" font-size="11" font-weight="600" fill="#011E41">Wire Transfer</text>
+            <text x="355" y="98" text-anchor="middle" font-size="9" fill="#4F4F4F">LP MASTER TRUST</text>
+
+            <!-- Settlement -->
+            <rect x="450" y="60" width="120" height="60" rx="8" fill="#EEF2F8" stroke="#003F9F" stroke-width="2"/>
+            <text x="510" y="85" text-anchor="middle" font-size="11" font-weight="600" fill="#011E41">Settlement</text>
+            <text x="510" y="100" text-anchor="middle" font-size="9" fill="#4F4F4F">1600020521</text>
+
+            <!-- Loan Pymt -->
+            <rect x="600" y="30" width="100" height="50" rx="8" fill="#E6FAF6" stroke="#05AB8C" stroke-width="2"/>
+            <text x="650" y="52" text-anchor="middle" font-size="10" font-weight="600" fill="#011E41">Loan Pymt</text>
+            <text x="650" y="67" text-anchor="middle" font-size="9" fill="#4F4F4F">PA/PURCH</text>
+
+            <!-- Excess/Ref -->
+            <rect x="600" y="90" width="100" height="50" rx="8" fill="#FFF8E7" stroke="#F5A800" stroke-width="2"/>
+            <text x="650" y="112" text-anchor="middle" font-size="10" font-weight="600" fill="#011E41">Excess/Ref</text>
+            <text x="650" y="127" text-anchor="middle" font-size="9" fill="#4F4F4F">Overpay</text>
+
+            <!-- Adjustments -->
+            <rect x="600" y="150" width="100" height="45" rx="8" fill="#FDEEF3" stroke="#E5376B" stroke-width="2"/>
+            <text x="650" y="170" text-anchor="middle" font-size="10" font-weight="600" fill="#011E41">Adjustments</text>
+            <text x="650" y="183" text-anchor="middle" font-size="9" fill="#4F4F4F">OOB</text>
+
+            <!-- Paths -->
+            <path d="M110,90 L140,90" fill="none" stroke="#828282" stroke-width="2" marker-end="url(#arrow-gray)"/>
+            <path d="M260,90 L290,90" fill="none" stroke="#05AB8C" stroke-width="2" marker-end="url(#arrow-teal)"/>
+            <path d="M420,90 L450,90" fill="none" stroke="#05AB8C" stroke-width="2" marker-end="url(#arrow-teal)"/>
+            <path d="M570,75 L600,55" fill="none" stroke="#E5376B" stroke-width="2" marker-end="url(#arrow-coral)"/>
+            <path d="M570,90 L600,115" fill="none" stroke="#828282" stroke-width="2" marker-end="url(#arrow-gray)"/>
+            <path d="M570,105 L600,172" fill="none" stroke="#828282" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arrow-gray)"/>
+
+            <!-- Arrow markers -->
+            <defs>
+              <marker id="arrow-gray" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#828282"/>
+              </marker>
+              <marker id="arrow-teal" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#05AB8C"/>
+              </marker>
+              <marker id="arrow-coral" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#E5376B"/>
+              </marker>
+            </defs>
+          </svg>
+        </div>
+
+        <div class="group-heading" style="margin-top:14px;">Payment File Key Fields (Pymt_File — 59,812 rows/day)</div>
+        <table class="data-table">
+          <thead>
+            <tr><th style="width:40px;">Col</th><th style="width:160px;">Field Name</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>A</code></td><td>Txn_ID</td><td>Unique transaction ID with prefix: <code>LPT-</code> (payment), <code>RTA-</code> (return), <code>ADJ-</code> (adjustment)</td></tr>
+            <tr><td><code>B</code></td><td>loan_number</td><td>Loan identifier in LAI-XXXXXXXX format</td></tr>
+            <tr><td><code>E</code></td><td>Date_remitted</td><td><strong>KEY FILTER FIELD</strong> — Settlement/remittance date used to pull each day's transactions</td></tr>
+            <tr><td><code>F</code></td><td>Transaction_Amount</td><td>Total payment amount</td></tr>
+            <tr><td><code>G</code></td><td>Principal</td><td>Principal portion of payment — reduces loan balance</td></tr>
+            <tr><td><code>H</code></td><td>Interest</td><td>Interest portion of payment — cost of borrowing</td></tr>
+            <tr><td><code>I</code></td><td>Fees</td><td>Fee portion of payment (late fees, service fees, etc.)</td></tr>
+            <tr><td><code>J</code></td><td>Excess</td><td>Overpayment amount — triggers Excess_Filter worksheet tracking</td></tr>
+            <tr><td><code>N</code></td><td>Loan_Product_Type</td><td>Product classification: DTC, POS (consumer) or eBay, JOOR (commercial)</td></tr>
+            <tr><td><code>AA</code></td><td>OOB</td><td>Out-of-Balance penny rounding discrepancy (max $0.09/payment)</td></tr>
+          </tbody>
+        </table>
+
+        <div class="key-concept">
+          <h4>The Fundamental Equation</h4>
+          <p><strong>Wire In (Credit)</strong> + <strong>Loan Payment (Debit)</strong> = <strong>~$0.00</strong><br>
+          Any difference should be within rounding tolerance (typically less than $0.10 per day)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-header">Wire Matching — Credits &amp; Debits</div>
+      <div class="subsection-body">
+        <div class="wire-equation">
+          <div class="wire-box credit">
+            <div class="wb-label">Wire In (Credit)</div>
+            <div class="wb-value">-$1,505,584.72</div>
+          </div>
+          <div class="wire-operator">+</div>
+          <div class="wire-box debit">
+            <div class="wb-label">Loan Payment (Debit)</div>
+            <div class="wb-value">+$1,505,584.80</div>
+          </div>
+          <div class="wire-operator">=</div>
+          <div class="wire-box result">
+            <div class="wb-label">Wire Difference</div>
+            <div class="wb-value">+$0.08</div>
+          </div>
+        </div>
+        <div class="info-grid">
+          <div class="info-card teal">
+            <h4>Perfect Match</h4>
+            <p>Wire + Payment = $0.00 — transactions clear immediately.</p>
+          </div>
+          <div class="info-card amber">
+            <h4>Rounding (OOB)</h4>
+            <p>Small differences from Out of Balance penny allocations. Accumulated for monthly true-up.</p>
+          </div>
+          <div class="info-card coral">
+            <h4>Large Variance</h4>
+            <p>Significant differences require investigation. Check Parse!N16 and Parse!O16 for variance details.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-header">Daily Reconciliation Steps</div>
+      <div class="subsection-body">
+        <div class="timeline">
+          <div class="timeline-step">
+            <div class="timeline-marker">1</div>
+            <div class="timeline-content">
+              <h4>Download Transactions</h4>
+              <p>Pull data from Horizon system, including prior day for backdated entries.</p>
+              <div class="timeline-details">
+                <ul class="detail-list">
+                  <li>Access Horizon or H360 extract</li>
+                  <li>Set date range (include prior day)</li>
+                  <li>Export to Horiz_Trx sheet</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="timeline-marker">2</div>
+            <div class="timeline-content">
+              <h4>Import to Workbook</h4>
+              <p>Append transactions applying conversion formulas.</p>
+              <div class="timeline-details">
+                <div class="formula-box">
+                  <div class="formula-code">=IF(Debit_Column="",Credit_Column*-1,Debit_Column)</div>
+                  <div class="formula-breakdown">Converts separate <span class="formula-field">Debit</span> and <span class="formula-field">Credit</span> columns into a single <span class="formula-field">Net Amount</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="timeline-marker">3</div>
+            <div class="timeline-content">
+              <h4>Create Daily Sheet</h4>
+              <p>Copy prior day's sheet, update Settlement Date and Horizon balance.</p>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="timeline-marker">4</div>
+            <div class="timeline-content">
+              <h4>Match &amp; Clear</h4>
+              <p>Pair wires with payments, move matched pairs to "Cleared Items" section.</p>
+              <div class="timeline-details">
+                <ul class="detail-list">
+                  <li>Wire In + Loan Payment (Participation Agreement) = ~$0</li>
+                  <li>Wire In + Loan Payment (Purchased) = ~$0</li>
+                  <li>Group and border each cleared set</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="timeline-marker">5</div>
+            <div class="timeline-content">
+              <h4>Record Adjustments</h4>
+              <p>Enter Out of Balance (OOB) adjustments and wire differences.</p>
+            </div>
+          </div>
+          <div class="timeline-step completed">
+            <div class="timeline-marker">✓</div>
+            <div class="timeline-content">
+              <h4>Verify Balance</h4>
+              <p>Final check: Horizon Balance + Uncleared Items must equal Zero.</p>
+              <div class="timeline-details">
+                <div class="formula-box">
+                  <div class="formula-code">=Horizon_Balance + Sum_of_Uncleared_Items</div>
+                  <div class="formula-breakdown"><span class="formula-field">Horizon Balance</span> + <span class="formula-field">Uncleared Items</span> MUST equal <span class="formula-field">$0.00</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ============================================================
+     SECTION 3: GL ACCOUNTS
+     ============================================================ -->
+<div class="section" id="s-gl">
+  <div class="section-header-band">
+    <div class="section-badge">3</div>
+    <div>
+      <h1>General Ledger Accounts</h1>
+      <div class="section-subtitle">Complete account reference by category — settlement, purchased, and program loans</div>
+    </div>
+  </div>
+
+  <div class="section-body">
+
+    <div class="subsection">
+      <div class="subsection-header">General Ledger Account Reference</div>
+      <div class="subsection-body">
+
+        <div class="group-heading">Settlement Accounts</div>
+        <div class="account-grid">
+          <div class="account-card settlement"><div class="account-number">1600020521</div><div class="account-name">Repayments Settlement</div></div>
+          <div class="account-card settlement"><div class="account-number">1600020497</div><div class="account-name">ACH Settlement</div></div>
+          <div class="account-card settlement"><div class="account-number">1600018566</div><div class="account-name">Main Operating</div></div>
+          <div class="account-card settlement"><div class="account-number">1600076143</div><div class="account-name">Cash Collateral</div></div>
+          <div class="account-card settlement"><div class="account-number">1600076150</div><div class="account-name">Chargeoff Collateral</div></div>
+        </div>
+
+        <div class="group-heading">Purchased Loan General Ledger Accounts</div>
+        <div class="account-grid">
+          <div class="account-card gl-asset"><div class="account-number">10226050</div><div class="account-name">Consumer Principal</div></div>
+          <div class="account-card gl-asset"><div class="account-number">10215050</div><div class="account-name">Commercial Principal</div></div>
+          <div class="account-card gl-asset"><div class="account-number">10426050</div><div class="account-name">Consumer Accrued Interest</div></div>
+          <div class="account-card gl-asset"><div class="account-number">10415050</div><div class="account-name">Commercial Accrued Interest</div></div>
+          <div class="account-card gl-income"><div class="account-number">40046050</div><div class="account-name">Consumer Interest Income</div></div>
+          <div class="account-card gl-income"><div class="account-number">40025050</div><div class="account-name">Commercial Interest Income</div></div>
+        </div>
+
+        <div class="group-heading">Program Loan General Ledger Accounts</div>
+        <div class="account-grid">
+          <div class="account-card gl-asset"><div class="account-number">10226000</div><div class="account-name">Consumer Principal</div></div>
+          <div class="account-card gl-asset"><div class="account-number">10215000</div><div class="account-name">Commercial Principal</div></div>
+          <div class="account-card gl-asset"><div class="account-number">10426000</div><div class="account-name">Consumer Accrued Interest</div></div>
+          <div class="account-card gl-asset"><div class="account-number">10415000</div><div class="account-name">Commercial Accrued Interest</div></div>
+          <div class="account-card gl-income"><div class="account-number">40046000</div><div class="account-name">Consumer Interest Income</div></div>
+          <div class="account-card gl-income"><div class="account-number">40025000</div><div class="account-name">Commercial Interest Income</div></div>
+        </div>
+
+        <div class="key-concept mt-12">
+          <h4>GL Account Suffix Convention</h4>
+          <p>
+            <strong>Suffix 050</strong> = Purchased loans (CCB owns outright)<br>
+            <strong>Suffix 000</strong> = Program loans (Participation Agreement — CCB participates, not full ownership)<br>
+            <strong>1600xxxxxx</strong> = Settlement/bank accounts &nbsp;&bull;&nbsp; <strong>10xxxxxx</strong> = Asset accounts &nbsp;&bull;&nbsp; <strong>40xxxxxx</strong> = Income accounts
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================
+     SECTION 4: DAILY ATE PROCESS
+     ============================================================ -->
+<div class="section" id="s-ate">
+  <div class="section-header-band">
+    <div class="section-badge">4</div>
+    <div>
+      <h1>Daily ATE Process</h1>
+      <div class="section-subtitle">Accounting Template Entry — complete 8-step daily workflow</div>
+    </div>
+  </div>
+
+  <div class="section-body">
+
+    <div class="subsection">
+      <div class="subsection-header">Daily Accounting Template Entry (ATE) Workflow</div>
+      <div class="subsection-body">
+        <div class="timeline">
+
+          <div class="timeline-step">
+            <div class="timeline-marker">1</div>
+            <div class="timeline-content">
+              <h4>Daily_1: Receive Data Sources</h4>
+              <p>Download files from SFTP and Fed activity</p>
+              <div class="timeline-details">
+                <ul class="detail-list">
+                  <li>Incoming Wires from Fed</li>
+                  <li>NACHA Origination Credits</li>
+                  <li>Daily Settlement Files from LendingPoint SFTP</li>
+                  <li>Files go to: Y:\File Transfers\Lending Point\Incoming</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="timeline-marker">2</div>
+            <div class="timeline-content">
+              <h4>Daily_2: Process Disbursements &amp; Payments</h4>
+              <p>Parse payment files and generate settlement entries</p>
+              <div class="timeline-details">
+                <ul class="detail-list">
+                  <li>Paste reports into Excel parse tools</li>
+                  <li>Parse by: Consumer (DTC/POS) vs Commercial (eBay/JOOR)</li>
+                  <li>Wire CREDITS Settlement Account 1600020521</li>
+                  <li>DEBIT Principal GL Accounts: 10226050 (Consumer), 10215050 (Commercial)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="timeline-marker">3</div>
+            <div class="timeline-content">
+              <h4>Daily_3: Calculate Accrued Interest</h4>
+              <p>Delta calculation between Day1_Tape and Day2_Tape</p>
+              <div class="timeline-details">
+                <div class="formula-box">
+                  <div class="formula-code">Day2(Accrued_Interest + Interest_Paid) - Day1(Accrued_Interest + Interest_Paid)</div>
+                  <div class="formula-breakdown">
+                    Compare <span class="formula-field">Accrued_Interest (Col N)</span> + <span class="formula-field">Interest_Paid (Col P)</span> between tapes<br>
+                    DEBIT <span class="formula-field">Accrued Interest GL</span> (10426050, 10415050)<br>
+                    CREDIT <span class="formula-field">Interest Income GL</span> (40046050, 40025050)
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="timeline-marker">4</div>
+            <div class="timeline-content">
+              <h4>Daily_4: Process Canceled Loans</h4>
+              <p>Write-off loans that were canceled</p>
+              <div class="timeline-details">
+                <ul class="detail-list">
+                  <li>Delta Parse: Day2 (Canceled) not in Day1 (Canceled)</li>
+                  <li>Filter by: <code>Loan_Status (Column L)</code> = "Canceled"</li>
+                  <li>DEBIT LendingPoint Operating Account 1600018566</li>
+                  <li>CREDIT Principal GL and Accrued Interest GL</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="timeline-marker">5</div>
+            <div class="timeline-content">
+              <h4>Daily_5: Process 120 DPD Charge-Offs — PURCHASED Portfolio</h4>
+              <p>Internal charge-off at 120+ days past due for purchased loans</p>
+              <div class="timeline-details">
+                <ul class="detail-list">
+                  <li>Filter: <code>Days_Past_Due (Col K)</code> &gt; 119 AND <code>Charge_Off_Date (Col T)</code> is blank</li>
+                  <li>DEBIT Reserve for Loan Loss GL 10290000</li>
+                  <li>CREDIT Principal Contra GL Accounts (Purchased)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="timeline-marker">6</div>
+            <div class="timeline-content">
+              <h4>Daily_6: Process 120 DPD Charge-Offs — PROGRAM Portfolio</h4>
+              <p>Internal charge-off at 120+ days past due for program loans</p>
+              <div class="timeline-details">
+                <ul class="detail-list">
+                  <li>Same filter criteria as Daily_5</li>
+                  <li>DEBIT Reserve for Loan Loss GL 10290000</li>
+                  <li>CREDIT Principal Contra GL Accounts (Program)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="timeline-marker">7</div>
+            <div class="timeline-content">
+              <h4>Daily_7: Process 180 DPD Charge-Offs — PURCHASED Consumer &amp; Commercial</h4>
+              <p>LendingPoint official charge-off processing for purchased loans</p>
+              <div class="timeline-details">
+                <ul class="detail-list">
+                  <li>Filter: <code>Charge_Off_Date (Col T)</code> is not blank</li>
+                  <li>DEBIT LendingPoint Cash Collateral 1600076143</li>
+                  <li>CREDIT Account Receivable GL 10807100</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-step completed">
+            <div class="timeline-marker">8</div>
+            <div class="timeline-content">
+              <h4>Daily_8: Complete ATE and Upload</h4>
+              <p>Process 180 DPD for PROGRAM loans, then finalize and upload ATE</p>
+              <div class="timeline-details">
+                <ul class="detail-list">
+                  <li>Daily_8: PROGRAM Consumer &amp; Commercial 180 DPD charge-offs</li>
+                  <li>Copy all entries to ATE templates</li>
+                  <li>Validate: Total Debits = Total Credits</li>
+                  <li>Upload completed ATE to O-drive</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================
+     SECTION 5: PURCHASE PARSE
+     ============================================================ -->
+<div class="section" id="s-parse">
+  <div class="section-header-band">
+    <div class="section-badge">5</div>
+    <div>
+      <h1>Purchase Parse Workbook</h1>
+      <div class="section-subtitle">Automated processing of loan-level data, transaction categories, and key formulas</div>
+    </div>
+  </div>
+
+  <div class="section-body">
+
+    <!-- Stat Cards -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-value">15</div>
+        <div class="stat-label">Worksheets</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📝</div>
+        <div class="stat-value">~60K</div>
+        <div class="stat-label">Payment Records</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📈</div>
+        <div class="stat-value">32K</div>
+        <div class="stat-label">Loan Snapshots</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🔄</div>
+        <div class="stat-value">VBA</div>
+        <div class="stat-label">Macro Automation</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-header">Transaction Categories</div>
+      <div class="subsection-body">
+        <div class="info-grid">
+          <div class="info-card teal">
+            <h4>LPT- (Loan Payment Transaction)</h4>
+            <p>Regular payments: Principal (Col G) + Interest (Col H) + Fees (Col I)</p>
+            <div style="margin-top: 6px;"><span class="formula-simple">LPT-0123456789 = $500.00</span></div>
+          </div>
+          <div class="info-card coral">
+            <h4>RTA- (Return Transaction)</h4>
+            <p>Reversals when payments bounce or fail (insufficient funds, closed account)</p>
+            <div style="margin-top: 6px;"><span class="formula-simple">RTA-0123456789 = -$500.00</span></div>
+          </div>
+          <div class="info-card indigo">
+            <h4>ADJ- (Adjustment Transaction)</h4>
+            <p>Corrections, refunds, spread corrections, SCRA adjustments</p>
+            <div style="margin-top: 6px;"><span class="formula-simple">ADJ-0123456789 = -$25.00</span></div>
+          </div>
+        </div>
+        <div class="key-concept mt-8">
+          <h4>Product Types — Column N (Loan_Product_Type)</h4>
+          <p>
+            <strong>Consumer:</strong> DTC (Direct-to-Consumer), POS (Point of Sale)<br>
+            <strong>Commercial:</strong> eBay, JOOR<br>
+            Each product type maps to different General Ledger accounts for proper categorization.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-header">Key Formulas — Parse Sheet Calculation Logic</div>
+      <div class="subsection-body">
+
+        <div class="group-heading">Consumer Principal Payment Calculation</div>
+        <p class="intro-text">Sums all principal payments for Consumer products (DTC/POS) on the settlement date</p>
+        <div class="formula-box">
+          <div class="formula-code">SUMIFS(Principal, Date_remitted=Settlement_Date, Payment_Type&ne;"CO Sale Proceeds", Txn_ID="LPT*", Loan_Product_Type={"DTC","POS"})</div>
+          <div class="formula-breakdown">
+            <span class="formula-field">Principal (Col G)</span> from Pymt_File where:
+            <span class="formula-field">Date_remitted (Col E)</span> = Settlement Date &bull;
+            <span class="formula-field">Payment_Type (Col K)</span> &ne; "CO Sale Proceeds" &bull;
+            <span class="formula-field">Txn_ID (Col A)</span> starts with "LPT" &bull;
+            <span class="formula-field">Loan_Product_Type (Col N)</span> is "DTC" or "POS"
+          </div>
+        </div>
+
+        <div class="group-heading">Consumer Interest + Fees Calculation</div>
+        <p class="intro-text">Sums Interest and Fees for Consumer LPT transactions</p>
+        <div class="formula-box">
+          <div class="formula-code">SUMIFS(Interest, ...) + SUMIFS(Fees, ...) for DTC/POS LPT transactions</div>
+          <div class="formula-breakdown">
+            <span class="formula-field">Interest (Col H)</span> + <span class="formula-field">Fees (Col I)</span><br>
+            Same filters as Principal: Date_remitted, Payment_Type, Txn_ID, Loan_Product_Type
+          </div>
+        </div>
+
+        <div class="group-heading">Return (RTA) Principal Calculation</div>
+        <p class="intro-text">Absolute value of returned Consumer Principal (returns are negative in source)</p>
+        <div class="formula-box">
+          <div class="formula-code">ABS(SUMIFS(Principal, Txn_ID="RTA*", Loan_Product_Type={"DTC","POS"}, ...))</div>
+          <div class="formula-breakdown">
+            Uses <span class="formula-field">ABS()</span> because return amounts are negative in the source data.<br>
+            Filters by <span class="formula-field">Txn_ID (Col A)</span> starting with "RTA"
+          </div>
+        </div>
+
+        <div class="group-heading">Out of Balance (OOB) Adjustments</div>
+        <p class="intro-text">Calculates penny rounding adjustments by product and transaction type</p>
+        <div class="formula-box">
+          <div class="formula-code">Sum of OOB amounts grouped by: Consumer LPT, Consumer RTA, Commercial LPT, Commercial RTA, etc.</div>
+          <div class="formula-breakdown">
+            <span class="formula-field">OOB (Col AA)</span> contains penny discrepancies &bull;
+            OOB_Filter sheet isolates all transactions where OOB &ne; 0 &bull;
+            Parse sheet row 25 captures the net OOB adjustment
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ============================================================
+     SECTION 6: CHARGE-OFF LIFECYCLE
+     ============================================================ -->
+<div class="section" id="s-chargeoff">
+  <div class="section-header-band">
+    <div class="section-badge">6</div>
+    <div>
+      <h1>Charge-Off Lifecycle</h1>
+      <div class="section-subtitle">Delinquency stages, CCB &amp; LP charge-off thresholds, and 5-section reconciliation</div>
+    </div>
+  </div>
+
+  <div class="section-body">
+
+    <div class="subsection">
+      <div class="subsection-header">Loan Delinquency Journey</div>
+      <div class="subsection-body">
+        <p class="intro-text">When borrowers stop making payments, loans progress through stages of delinquency. The charge-off process ensures non-performing assets are properly tracked and written off per regulatory requirements.</p>
+
+        <!-- Static 5-stage journey tracker -->
+        <div class="journey-track">
+          <div class="journey-stage s1">
+            <div class="js-icon">✓</div>
+            <div class="js-title">Active</div>
+            <div class="js-desc">Current</div>
+          </div>
+          <div class="journey-stage s2">
+            <div class="js-icon">⏰</div>
+            <div class="js-title">Delinquent</div>
+            <div class="js-desc">30–89 DPD</div>
+          </div>
+          <div class="journey-stage s3">
+            <div class="js-icon">⚠</div>
+            <div class="js-title">120+ DPD</div>
+            <div class="js-desc">CCB Subledger</div>
+          </div>
+          <div class="journey-stage s4">
+            <div class="js-icon">📋</div>
+            <div class="js-title">LP Charge-Off</div>
+            <div class="js-desc">180 DPD</div>
+          </div>
+          <div class="journey-stage s5">
+            <div class="js-icon">🔚</div>
+            <div class="js-title">Resolution</div>
+            <div class="js-desc">Sold/Settled</div>
+          </div>
+        </div>
+
+        <div class="info-grid mt-8">
+          <div class="info-card teal">
+            <h4>Active / Current</h4>
+            <p>Loan is current — borrower making payments as scheduled. <code>Loan_Status (Col L)</code> = "Active" or "Current".</p>
+          </div>
+          <div class="info-card amber">
+            <h4>Early Delinquency (30–89 DPD)</h4>
+            <p>Missed payments but not severely delinquent. Collections efforts begin. <code>Days_Past_Due (Col K)</code> is between 30–89.</p>
+          </div>
+          <div class="info-card indigo">
+            <h4>120+ DPD — CCB Internal Recognition</h4>
+            <p>At 120 DPD, CCB recognizes impairment. Enters 120-ChargeOff sheet and 120Subledger for tracking.</p>
+          </div>
+        </div>
+        <div class="info-grid mt-8">
+          <div class="info-card coral">
+            <h4>LendingPoint Charge-Off (180 DPD)</h4>
+            <p>LP formally charges off the loan. The <code>Charge_Off_Date (Col T)</code> field gets populated. Loan moves to 180-ChargeOff and 180Subledger.</p>
+          </div>
+          <div class="info-card blue">
+            <h4>Final Resolution</h4>
+            <p>
+              <strong>CO Sale Proceeds:</strong> Sold to debt buyers (<code>Payment_Type = "CO Sale Proceeds"</code>)<br>
+              <strong>Settled:</strong> Borrower settles for less than full balance<br>
+              <strong>Obligations Met:</strong> Paid in full by borrower
+            </p>
+          </div>
+        </div>
+
+        <div class="formula-box mt-8">
+          <div class="formula-code">Filter: Days_Past_Due &gt; 119 AND Charge_Off_Date is blank AND Loan_Status NOT IN ("Canceled","Closed - Obligations met")</div>
+          <div class="formula-breakdown">
+            <span class="formula-field">Days_Past_Due (Col K)</span> &gt; 119 &bull;
+            <span class="formula-field">Charge_Off_Date (Col T)</span> is empty &bull;
+            <span class="formula-field">Loan_Status (Col L)</span> excludes Canceled and Closed statuses
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-header">5-Section Reconciliation — 120-Day Portfolio</div>
+      <div class="subsection-body">
+        <div class="info-grid">
+          <div class="info-card blue">
+            <h4>#1 New Loans</h4>
+            <p>Loans entering the 120+ DPD bucket for the first time (in Day2 but not Day1)</p>
+          </div>
+          <div class="info-card teal">
+            <h4>#2 Balance Changes</h4>
+            <p>Changes in <code>Outstanding_Principal (Col M)</code> / <code>Accrued_Interest (Col N)</code> on existing loans</p>
+          </div>
+          <div class="info-card amber">
+            <h4>#3 Charged Off by LP</h4>
+            <p>Loans moved to 180-ChargeOff (<code>Charge_Off_Date</code> now populated)</p>
+          </div>
+          <div class="info-card coral">
+            <h4>#4 Dropped — Not Charged Off</h4>
+            <p>Left unexpectedly — requires investigation</p>
+          </div>
+          <div class="info-card indigo">
+            <h4>#5 Obligations Met</h4>
+            <p>Paid off in full (<code>Loan_Status = "Closed - Obligations met"</code>)</p>
+          </div>
+        </div>
+        <div class="key-concept mt-8">
+          <h4>The Reconciliation Formula</h4>
+          <p><strong>Day2 Balance = Day1 Balance + New + Changes &minus; Charged Off &minus; Dropped &minus; Paid Off</strong></p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ============================================================
+     SECTION 7: SETTLEMENT RECONCILIATION
+     ============================================================ -->
+<div class="section" id="s-settlement">
+  <div class="section-header-band">
+    <div class="section-badge">7</div>
+    <div>
+      <h1>Settlement Reconciliation</h1>
+      <div class="section-subtitle">Daily reconciliation of account 1600020521 — excess tracking and month-end certification</div>
+    </div>
+  </div>
+
+  <div class="section-body">
+
+    <div class="subsection">
+      <div class="subsection-header">Settlement Account Reconciliation — 1600020521</div>
+      <div class="subsection-body">
+        <p class="intro-text">The Repayments Settlement Account receives daily wires and must reconcile to zero after all entries are posted.</p>
+
+        <div class="info-grid">
+          <div class="info-card teal">
+            <h4>Excess Payment Tracking</h4>
+            <p>3,639 records &nbsp;&bull;&nbsp; 465 unique loans &nbsp;&bull;&nbsp; -$110,283 net outstanding</p>
+            <p style="margin-top: 6px; font-size: 7.5pt;">
+              Excess payments from <code>Excess (Col J)</code> in Pymt_File, tracked in Excess_Filter worksheet.
+            </p>
+          </div>
+          <div class="info-card blue">
+            <h4>Extract Loan ID</h4>
+            <p>First 12 characters of description = LAI-XXXXXXXX</p>
+            <div style="margin-top: 6px;"><span class="formula-simple">=LEFT(Description,12)</span></div>
+          </div>
+          <div class="info-card teal">
+            <h4>Month-End Certification</h4>
+            <p>Bank Balance + Reconciling Items = $0.00</p>
+            <div class="formula-box" style="margin-top: 8px;">
+              <div class="formula-code">Bank_Balance + Sum_of_Reconciling_Items = Final_Balance</div>
+              <div class="formula-breakdown">Final_Balance MUST equal <span class="formula-field">$0.00</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="key-concept mt-12">
+          <h4>Settlement Account Flow</h4>
+          <p>
+            <strong>In:</strong> Daily wire transfers from LP (Code 45 — Wire) &nbsp;&bull;&nbsp;
+            <strong>Out:</strong> Loan payments, excess refunds, adjustments (Code 30 — Debit) &nbsp;&bull;&nbsp;
+            <strong>Adj:</strong> OOB corrections, true-ups (Code 60 — Credit)
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ============================================================
+     SECTION 8: VALIDATION MATRIX
+     ============================================================ -->
+<div class="section" id="s-validation">
+  <div class="section-header-band">
+    <div class="section-badge">8</div>
+    <div>
+      <h1>Validation Matrix</h1>
+      <div class="section-subtitle">17 validation checks — locations, expected values, and current status</div>
+    </div>
+  </div>
+
+  <div class="section-body">
+
+    <div class="subsection">
+      <div class="subsection-header">All 17 Validation Checks</div>
+      <div class="subsection-body">
+        <table class="validation-table">
+          <thead>
+            <tr>
+              <th style="width:28px;">#</th>
+              <th>Check Name</th>
+              <th style="width:80px;">Location</th>
+              <th style="width:28px;">Exp</th>
+              <th>Description</th>
+              <th style="width:60px;">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td><strong>Credits = Debits</strong></td><td>Parse!N21</td><td>Y</td><td>Total Credits must equal Total Debits (balanced journal)</td><td><span class="badge pass">✓ Pass</span></td></tr>
+            <tr><td>2</td><td>Sub-entries Match Top Debit</td><td>Parse!N15</td><td>Y</td><td>Sum of ATE sub-entries equals calculated wire total</td><td><span class="badge pass">✓ Pass</span></td></tr>
+            <tr><td>3</td><td>Top Debit Match Wire</td><td>Parse!N16</td><td>Y</td><td>Calculated total matches actual wire received</td><td><span class="badge fail">✗ -$0.02</span></td></tr>
+            <tr><td>4</td><td>Remitted Amount = Wire</td><td>Parse!N18</td><td>Y</td><td>Sum of Remitted_Amount (Col R) equals wire</td><td><span class="badge fail">✗ -$0.02</span></td></tr>
+            <tr><td>5</td><td>Excess Entries Match</td><td>Parse!N25</td><td>Y</td><td>ATE excess entries match Excess_Filter totals</td><td><span class="badge pass">✓ Pass</span></td></tr>
+            <tr><td>6</td><td>Charge-Off Sold Entries Match</td><td>Parse!N32</td><td>Y</td><td>CO Sale Proceeds in ATE match Pymt_File</td><td><span class="badge pass">✓ Pass</span></td></tr>
+            <tr><td>7</td><td>Returns Match RTA</td><td>Parse!N34</td><td>Y</td><td>Return entries match RTA transaction totals</td><td><span class="badge pass">✓ Pass</span></td></tr>
+            <tr><td>8</td><td>120-ChargeOff Principal Match</td><td>120-CO!AE1</td><td>Y</td><td>Principal delta matches calculated change</td><td><span class="badge pass">✓ Pass</span></td></tr>
+            <tr><td>9</td><td>120-ChargeOff Interest Match</td><td>120-CO!AE2</td><td>Y</td><td>Interest + Capitalized Interest delta matches</td><td><span class="badge fail">✗ Fail</span></td></tr>
+            <tr><td>10</td><td>120-CO Recon Principal</td><td>120-CO!AE3</td><td>Y</td><td>Reconciled principal matches Sub-ledger delta</td><td><span class="badge pass">✓ Pass</span></td></tr>
+            <tr><td>11</td><td>120-CO Recon Interest</td><td>120-CO!AE4</td><td>Y</td><td>Reconciled interest matches Sub-ledger delta</td><td><span class="badge pass">✓ Pass</span></td></tr>
+            <tr><td>12</td><td>180-ChargeOff Principal Match</td><td>180-CO!AT20</td><td>Y</td><td>3-way validation of principal deltas</td><td><span class="badge pass">✓ Pass</span></td></tr>
+            <tr><td>13</td><td>180-ChargeOff Interest Match</td><td>180-CO!AU20</td><td>Y</td><td>3-way validation of interest deltas</td><td><span class="badge fail">✗ Fail</span></td></tr>
+            <tr><td>14</td><td>180 TrueUp Principal</td><td>Parse!L7</td><td>Y</td><td>180-CO TrueUp principal matches 180-ChargeOff!AT18</td><td><span class="badge pass">✓ Pass</span></td></tr>
+            <tr><td>15</td><td>180 TrueUp Interest</td><td>Parse!L8</td><td>Y</td><td>180-CO TrueUp interest matches 180-ChargeOff!AU18</td><td><span class="badge pass">✓ Pass</span></td></tr>
+            <tr><td>16</td><td>Canceled Principal Match</td><td>Parse!V13</td><td>Y</td><td>Canceled loan principal matches validation total</td><td><span class="badge fail">✗ Fail</span></td></tr>
+            <tr><td>17</td><td>Canceled Interest Match</td><td>Parse!W13</td><td>Y</td><td>Canceled loan interest matches validation total</td><td><span class="badge fail">✗ Fail</span></td></tr>
+          </tbody>
+        </table>
+
+        <div class="info-grid mt-12">
+          <div class="info-card teal">
+            <h4>Critical: Credits = Debits (N21)</h4>
+            <p>MUST always pass. If it fails, journal is unbalanced and cannot be posted to the General Ledger.</p>
+          </div>
+          <div class="info-card amber">
+            <h4>Wire Variance (-$0.02)</h4>
+            <p>Typically caused by OOB penny rounding. Auto-captured in Parse row 25 and adjusted monthly.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ============================================================
+     SECTION 9: KNOWN PROBLEMS
+     ============================================================ -->
+<div class="section" id="s-problems">
+  <div class="section-header-band">
+    <div class="section-badge">9</div>
+    <div>
+      <h1>Known Problem Areas</h1>
+      <div class="section-subtitle">7 documented reconciliation issues with root cause analysis and business impact</div>
+    </div>
+  </div>
+
+  <div class="section-body">
+
+    <!-- Issue 1 -->
+    <div class="subsection">
+      <div class="subsection-header" style="background:#7B1234;">Issue #1: $1.3M Legacy Carry Over Balance &nbsp;|&nbsp; CRITICAL — Unresolved since August 2023</div>
+      <div class="subsection-body">
+        <div class="info-grid">
+          <div class="info-card coral"><h4>Outstanding Amount</h4><p style="font-size:11pt;font-weight:700;color:var(--coral);">$1,332,205.21</p></div>
+          <div class="info-card amber"><h4>Age of Issue</h4><p style="font-size:11pt;font-weight:700;color:var(--amber-core);">2+ Years</p></div>
+          <div class="info-card indigo"><h4>Status</h4><p style="font-weight:600;">Manually Excluded Daily</p></div>
+        </div>
+        <p class="intro-text mt-8">In August 2023, LendingPoint migrated to a new servicing platform. A balance of approximately $1.33 million was carried forward that does not tie to any identifiable transactions. This balance is manually excluded from daily reconciliation to allow processing to continue.</p>
+        <table class="data-table">
+          <thead><tr><th>File / Location</th><th>Worksheet</th><th>Cell/Range</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><strong>DAILY LendingPoint Repayment.xlsx</strong></td><td>Daily Settlement Sheet</td><td>Uncleared Items section</td><td>Legacy balance excluded from daily reconciliation</td></tr>
+            <tr><td><strong>Macro Purchase Parse.xlsm</strong></td><td>Parse</td><td>Row 24 (Historical)</td><td>Original migration adjustment entry</td></tr>
+            <tr><td><strong>Historical Records</strong></td><td>August 2023 files</td><td>Various</td><td>Pre-migration reconciliation records</td></tr>
+          </tbody>
+        </table>
+        <div class="problem-impact mt-8">
+          <strong>Root Cause Factors:</strong>
+          <ul>
+            <li><strong>Canceled Loans Not Reported:</strong> Loans canceled prior to migration left orphaned payment records</li>
+            <li><strong>Excess Payments Not Refunded:</strong> Overpayments from legacy system not transferred during migration</li>
+            <li><strong>Timing Differences:</strong> Transactions in-flight during cutover not properly reconciled</li>
+            <li><strong>Data Mapping Issues:</strong> Some LAI numbers may not have mapped correctly between platforms</li>
+          </ul>
+        </div>
+        <div class="problem-impact mt-8">
+          <strong>Business Impact:</strong>
+          <ul>
+            <li><strong>Audit Risk:</strong> External auditors flagged as material reconciling item requiring documentation</li>
+            <li><strong>Operational Overhead:</strong> Manual exclusion required every day, adding error risk</li>
+            <li><strong>Regulatory Concern:</strong> Potential questions from bank examiners regarding unreconciled balances</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Issue 2 -->
+    <div class="subsection">
+      <div class="subsection-header" style="background:#7B1234;">Issue #2: Broken Certification Sheet Formulas &nbsp;|&nbsp; CRITICAL — Prevents month-end validation</div>
+      <div class="subsection-body">
+        <p class="intro-text">The month-end certification worksheet contains multiple <strong style="color:var(--coral);">#REF!</strong> errors. These errors prevent automated validation checks from functioning.</p>
+        <table class="data-table">
+          <thead><tr><th>File / Location</th><th>Worksheet</th><th>Affected Cells</th><th>Error Type</th></tr></thead>
+          <tbody>
+            <tr><td><strong>DAILY LendingPoint Repayment.xlsx</strong></td><td>Certification</td><td>Bank Balance section</td><td>#REF! — Missing source reference</td></tr>
+            <tr><td><strong>DAILY LendingPoint Repayment.xlsx</strong></td><td>Certification</td><td>Reconciling Items</td><td>#REF! — Broken cell references</td></tr>
+            <tr><td><strong>DAILY LendingPoint Repayment.xlsx</strong></td><td>Certification</td><td>Final Certification</td><td>#REF! — Formula dependencies broken</td></tr>
+          </tbody>
+        </table>
+        <div class="problem-impact mt-8">
+          <strong>Business Impact:</strong>
+          <ul>
+            <li><strong>Month-End Delays:</strong> Cannot complete formal certification without manual calculations</li>
+            <li><strong>Control Weakness:</strong> Automated validation controls not functioning as designed</li>
+            <li><strong>Documentation Gap:</strong> Certification sheets are key audit evidence; errors undermine reliability</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Issue 3 -->
+    <div class="subsection">
+      <div class="subsection-header" style="background:#9C4B00;">Issue #3: Excess/Refund Matching Backlog &nbsp;|&nbsp; HIGH PRIORITY — Growing backlog</div>
+      <div class="subsection-body">
+        <div class="info-grid">
+          <div class="info-card amber"><h4>Total Records</h4><p style="font-size:11pt;font-weight:700;color:var(--amber-core);">3,600+</p></div>
+          <div class="info-card coral"><h4>Net Outstanding</h4><p style="font-size:11pt;font-weight:700;color:var(--coral);">$110,283.81</p></div>
+          <div class="info-card indigo"><h4>Oldest Items</h4><p style="font-weight:600;">October 2024</p></div>
+        </div>
+        <p class="intro-text mt-8">Excess payments (Pymt_File Column J) should be matched against corresponding refunds (RTA-) or adjustments (ADJ-). A significant backlog has accumulated with many items open for months.</p>
+        <table class="data-table">
+          <thead><tr><th>Period</th><th>Outstanding Amount</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>October 2024 – June 2025</td><td style="color:var(--coral);font-weight:600;">-$83,796.58</td><td>Older items, likely require research</td></tr>
+            <tr><td>July 2025 – Current</td><td style="color:#9C4B00;font-weight:600;">-$14,574.86</td><td>More recent, may self-resolve</td></tr>
+            <tr><td>Other / Miscellaneous</td><td style="color:var(--text-muted);">-$11,912.37</td><td>Various periods</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Issue 4 -->
+    <div class="subsection">
+      <div class="subsection-header" style="background:#005280;">Issue #4: SCRA Adjustments Pending Resolution &nbsp;|&nbsp; MEDIUM PRIORITY</div>
+      <div class="subsection-body">
+        <p class="intro-text">The Servicemembers Civil Relief Act (SCRA) requires interest rate caps for active-duty military. LendingPoint processes adjustments as ADJ- transactions but there is no clear CCB protocol for settlement disposition.</p>
+        <table class="data-table">
+          <thead><tr><th>Transaction ID</th><th>Amount</th><th>Type</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><code>ADJ-0106548647</code></td><td style="color:var(--coral);font-weight:600;">$3,583.44</td><td>SCRA Interest Adjustment</td><td>Pending resolution</td></tr>
+            <tr><td><code>ADJ-0106673829</code></td><td style="color:var(--coral);font-weight:600;">$263.63</td><td>SCRA Interest Adjustment</td><td>Pending resolution</td></tr>
+          </tbody>
+        </table>
+        <div class="problem-impact mt-8">
+          <strong>Open Questions:</strong>
+          <ul>
+            <li>Refund to borrower? Transfer to LendingPoint? Write-off as regulatory compliance cost?</li>
+            <li>Resolution requires input from Compliance, Legal, and LendingPoint</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Issue 5 -->
+    <div class="subsection">
+      <div class="subsection-header" style="background:#005280;">Issue #5: Charge-Off Interest Reconciliation Discrepancy &nbsp;|&nbsp; MEDIUM — Affects checks #9 and #13</div>
+      <div class="subsection-body">
+        <div class="info-grid">
+          <div class="info-card coral"><h4>Failing Check #9</h4><p style="font-weight:600;">120-ChargeOff Interest Match</p><p>Location: 120-CO!AE2</p></div>
+          <div class="info-card coral"><h4>Failing Check #13</h4><p style="font-weight:600;">180-ChargeOff Interest Match</p><p>Location: 180-CO!AU20</p></div>
+          <div class="info-card indigo"><h4>Status</h4><p style="font-weight:600;">Under Investigation</p></div>
+        </div>
+        <p class="intro-text mt-8">Principal amounts reconcile correctly (checks #8 and #12 pass), but interest components including capitalized interest do not match between subledger delta calculations and validation totals.</p>
+        <div class="problem-impact mt-8">
+          <strong>Potential Root Causes:</strong>
+          <ul>
+            <li><strong>Capitalized Interest Timing:</strong> Interest capitalization occurs at different times between LP and CCB systems</li>
+            <li><strong>Accrual Method Differences:</strong> LP may use a different interest accrual methodology than CCB's subledger</li>
+            <li><strong>Backdated Adjustments:</strong> Late adjustments to charge-off records may not flow through both systems consistently</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Issue 6 -->
+    <div class="subsection">
+      <div class="subsection-header" style="background:#005280;">Issue #6: Canceled Loan Validation Failures &nbsp;|&nbsp; MEDIUM — Affects checks #16 and #17</div>
+      <div class="subsection-body">
+        <div class="info-grid">
+          <div class="info-card coral"><h4>Failing Check #16</h4><p style="font-weight:600;">Canceled Principal Match</p><p>Location: Parse!V13</p></div>
+          <div class="info-card coral"><h4>Failing Check #17</h4><p style="font-weight:600;">Canceled Interest Match</p><p>Location: Parse!W13</p></div>
+          <div class="info-card amber"><h4>Related To</h4><p style="font-weight:600;">Issue #1 (Legacy Balance)</p></div>
+        </div>
+        <p class="intro-text mt-8">Canceled/rescinded loan transactions not properly reconciling between payment file totals and validation worksheet calculations. Directly related to Issue #1 where "Canceled Loans Not Reported" was identified as root cause.</p>
+        <table class="data-table mt-8">
+          <thead><tr><th>File / Location</th><th>Worksheet</th><th>Cell/Range</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Macro Purchase Parse.xlsm</strong></td><td>Parse</td><td>V13</td><td>Canceled loan principal validation check</td></tr>
+            <tr><td><strong>Macro Purchase Parse.xlsm</strong></td><td>Parse</td><td>W13</td><td>Canceled loan interest validation check</td></tr>
+            <tr><td><strong>Macro Purchase Parse.xlsm</strong></td><td>Pymt_File</td><td>CANC- transactions</td><td>Loan cancellation/rescission records</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Issue 7 -->
+    <div class="subsection">
+      <div class="subsection-header">Issue #7: Wire Variance from Penny Rounding &nbsp;|&nbsp; LOW — Accepted &amp; auto-adjusted</div>
+      <div class="subsection-body">
+        <div class="info-grid">
+          <div class="info-card amber"><h4>Current Variance</h4><p style="font-size:11pt;font-weight:700;color:var(--amber-core);">-$0.02</p></div>
+          <div class="info-card teal"><h4>Maximum Expected</h4><p style="font-size:11pt;font-weight:700;color:var(--teal);">$0.09/payment</p></div>
+          <div class="info-card blue"><h4>Status</h4><p style="font-weight:600;">Accepted / Auto-Adjusted</p></div>
+        </div>
+        <p class="intro-text mt-8">Validation checks #3 and #4 fail by $0.02 due to OOB penny rounding. This is an expected and accepted variance that is auto-captured (OOB_Filter) and adjusted monthly.</p>
+        <div class="problem-impact mt-8">
+          <strong>Why This Is Accepted:</strong>
+          <ul>
+            <li><strong>Industry Standard:</strong> Penny rounding is common in payment processing and typically immaterial</li>
+            <li><strong>Auto-Captured:</strong> OOB_Filter isolates all OOB &ne; 0 transactions; Parse row 25 captures net adjustment</li>
+            <li><strong>Monthly True-Up:</strong> Accumulated OOB amounts settled with LendingPoint during monthly true-up</li>
+            <li><strong>Alert Threshold:</strong> If variance exceeds $1.00, investigate for non-OOB causes</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ============================================================
+     SECTION 10: GLOSSARY & REFERENCE
+     ============================================================ -->
+<div class="section" id="s-glossary">
+  <div class="section-header-band">
+    <div class="section-badge">10</div>
+    <div>
+      <h1>Glossary &amp; Reference</h1>
+      <div class="section-subtitle">Key terms, transaction codes, and payment file column reference (Pymt_File — 59,812 rows)</div>
+    </div>
+  </div>
+
+  <div class="section-body">
+
+    <div class="subsection">
+      <div class="subsection-header">Terms &amp; Definitions</div>
+      <div class="subsection-body">
+        <dl class="glossary-grid">
+          <div class="glossary-item">
+            <dt>ATE</dt>
+            <dd>Accounting Template Entry — formatted journal entry for GL posting. Generated by Parse sheet.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>CCB</dt>
+            <dd>Coastal Community Bank — bank of record for LendingPoint loans. Holds underlying accounts.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>DPD (Days Past Due)</dt>
+            <dd>Number of days since payment was due. Classifies delinquency severity.</dd>
+            <div class="column-badge">Day_Tape Col K: Days_Past_Due</div>
+          </div>
+          <div class="glossary-item">
+            <dt>Excess Payment</dt>
+            <dd>When borrower pays more than due. Held in settlement until refunded.</dd>
+            <div class="column-badge">Pymt_File Col J: Excess</div>
+          </div>
+          <div class="glossary-item">
+            <dt>Horizon</dt>
+            <dd>CCB's core banking system (FIS Horizon/H360). Source of transaction data.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>LAI</dt>
+            <dd>Loan Account Identifier — unique loan ID in format LAI-XXXXXXXX.</dd>
+            <div class="column-badge">Pymt_File Col B: loan_number</div>
+          </div>
+          <div class="glossary-item">
+            <dt>LP (LendingPoint)</dt>
+            <dd>Partner that originates and services loans. Sends daily payment files.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>OOB (Out of Balance)</dt>
+            <dd>Penny rounding where Principal + Interest &ne; Total. Max $0.09/payment.</dd>
+            <div class="column-badge">Pymt_File Col AA: OOB</div>
+          </div>
+          <div class="glossary-item">
+            <dt>PA (Participation Agreement)</dt>
+            <dd>Contractual arrangement for loan participation. CCB participates vs. owns.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>PURCH (Purchased)</dt>
+            <dd>Loans CCB has purchased outright (vs. participated). Uses GL suffix 050.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>SCRA</dt>
+            <dd>Servicemembers Civil Relief Act. Requires interest rate caps for military personnel.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>Settlement Account</dt>
+            <dd>Bank account 1600020521 where wires are received and payments processed.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>Subledger</dt>
+            <dd>Detailed subsidiary ledger tracking individual loans. 120/180 track charge-offs.</dd>
+          </div>
+          <div class="glossary-item">
+            <dt>True-Up</dt>
+            <dd>Monthly adjustment to settle accumulated small differences with LP.</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-header">Transaction Codes — Horizon System</div>
+      <div class="subsection-body">
+        <div class="info-grid">
+          <div class="info-card coral">
+            <h4>Code 30 — Debit</h4>
+            <p>Outgoing payments, adjustments, excess. Money leaving settlement account.</p>
+          </div>
+          <div class="info-card teal">
+            <h4>Code 45 — Wire</h4>
+            <p>Incoming wire transfers from LendingPoint. Primary inflow source.</p>
+          </div>
+          <div class="info-card indigo">
+            <h4>Code 60 — Credit</h4>
+            <p>Refunds, OOB adjustments, true-ups. Money entering settlement account.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-header">Payment File Column Reference — Pymt_File (59,812 rows)</div>
+      <div class="subsection-body">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width:40px;">Col</th>
+              <th style="width:130px;">Field Name</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><code>A</code></td><td>Txn_ID</td><td>Transaction ID with prefix (LPT-, RTA-, ADJ-, CHG-)</td></tr>
+            <tr><td><code>B</code></td><td>loan_number</td><td>Loan identifier (LAI-XXXXXXXX format)</td></tr>
+            <tr><td><code>C</code></td><td>Loan_Status</td><td>Current loan status</td></tr>
+            <tr><td><code>D</code></td><td>Created_Date</td><td>Transaction creation date</td></tr>
+            <tr><td><code>E</code></td><td>Date_remitted</td><td>Settlement/remittance date — KEY FILTER FIELD</td></tr>
+            <tr><td><code>F</code></td><td>Transaction_Amount</td><td>Total transaction amount</td></tr>
+            <tr><td><code>G</code></td><td>Principal</td><td>Principal portion of payment</td></tr>
+            <tr><td><code>H</code></td><td>Interest</td><td>Interest portion of payment</td></tr>
+            <tr><td><code>I</code></td><td>Fees</td><td>Fee portion of payment</td></tr>
+            <tr><td><code>J</code></td><td>Excess</td><td>Overpayment amount (triggers Excess_Filter)</td></tr>
+            <tr><td><code>K</code></td><td>Payment_Type</td><td>ACH, Debit Card, Check, Refinance, Excess, CO Sale Proceeds</td></tr>
+            <tr><td><code>N</code></td><td>Loan_Product_Type</td><td>DTC, POS, eBay, JOOR</td></tr>
+            <tr><td><code>Q</code></td><td>DMC_Fee</td><td>Debt Management Company fee</td></tr>
+            <tr><td><code>R</code></td><td>Remitted_Amount</td><td>Amount actually remitted in wire</td></tr>
+            <tr><td><code>T</code></td><td>Charge_Off_Date</td><td>Date LP officially charged off the loan (180 DPD)</td></tr>
+            <tr><td><code>K (DayTape)</code></td><td>Days_Past_Due</td><td>Days since payment was due (Day_Tape column)</td></tr>
+            <tr><td><code>L (DayTape)</code></td><td>Loan_Status</td><td>Current loan status in Day_Tape</td></tr>
+            <tr><td><code>M (DayTape)</code></td><td>Outstanding_Principal</td><td>Current loan principal balance</td></tr>
+            <tr><td><code>N (DayTape)</code></td><td>Accrued_Interest</td><td>Unpaid accumulated interest</td></tr>
+            <tr><td><code>AA</code></td><td>OOB</td><td>Out-of-Balance penny discrepancies per transaction</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
