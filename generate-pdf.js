@@ -5,7 +5,7 @@ const path = require('path');
   const browser = await puppeteer.launch({ headless: 'new' });
   const page = await browser.newPage();
   const filePath = 'file:///' + path.resolve(__dirname, 'crowe-pdf-template.html').replace(/\\/g, '/');
-  await page.goto(filePath, { waitUntil: 'networkidle0' });
+  await page.goto(filePath, { waitUntil: 'load' });
   await page.pdf({
     path: 'LendingPoint-Reconciliation-Guide.pdf',
     format: 'A4',
